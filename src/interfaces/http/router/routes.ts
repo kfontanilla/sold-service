@@ -1,6 +1,4 @@
 const { Router } = require('express');
-const controller = require('src/utils/createControllerRoutes');
-const compression = require('compression');
 import container from '../../../container';
 
 const routes = () => {
