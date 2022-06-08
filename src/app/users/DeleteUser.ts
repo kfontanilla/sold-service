@@ -12,7 +12,7 @@ class DeleteUser {
       const data = await this.usersRepository.deleteById(id);
       res.json(data);
     } catch (error) {
-      console.log(error);
+      console.log('DELETE_USER_ERROR', error);
     }
   }
 }
