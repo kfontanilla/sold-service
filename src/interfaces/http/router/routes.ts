@@ -5,9 +5,9 @@ const routes = () => {
   // Initialize router
   const router = new Router();
 
-  router.get('/users/names', (...args: any) => container.resolve('getUsers').execute(...args));
-  router.get('/users/:id', (...args: any) => container.resolve('getUser').execute(...args));
-  router.delete('/users/:id', (...args: any) => container.resolve('deleteUser').execute(...args));
+  router.get('/users', (...args: any) => container.resolve('GetUsers').execute(...args));
+  router.get('/users/:id', (...args: any) => container.resolve('GetUser').execute(...args));
+  router.delete('/users/:id', (...args: any) => container.resolve('DeleteUser').execute(...args));
 
   // Show available endpoints in the terminal
   return router;

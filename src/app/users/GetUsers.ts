@@ -9,9 +9,9 @@ class GetUsers {
       const data = await this.usersRepository.getAll();
       res.json(data);
     } catch (error) {
-      console.log(error);
+      console.log('GET_USERS_ERROR', error);
     }
   }
 }
 
-module.exports = GetUsers;
+export default GetUsers;

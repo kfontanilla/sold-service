@@ -1,9 +1,9 @@
-import { BaseMongoRepository } from './base/BaseMongoRepository';
-import { userModel } from '../database/mongo/models/userModel';
+const User = require('src/domain/User');
+import { BaseRDSRepository } from './base/BaseRDSRepository';
 
-class UsersRepository extends BaseMongoRepository {
-  constructor({ mongoClient }: { mongoClient: any }) {
-    super(mongoClient, userModel);
+class UsersRepository extends BaseRDSRepository {
+  constructor({ UserModel }: any) {
+    super(UserModel, User);
   }
 }
 

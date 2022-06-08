@@ -17,4 +17,4 @@ class DeleteUser {
   }
 }
 
-module.exports = DeleteUser;
+export default DeleteUser;

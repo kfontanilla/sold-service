@@ -12,9 +12,9 @@ class GetUser {
       const data = await this.usersRepository.getById(id);
       res.json(data);
     } catch (error) {
-      console.log(error);
+      console.log('GET_USER_BY_ID_ERROR', error);
     }
   }
 }
 
-module.exports = GetUser;
+export default GetUser;

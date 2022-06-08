@@ -1,13 +1,14 @@
 {
-  "name": "emapta",
+  "name": "Placester",
   "version": "1.0.0",
-  "description": "Kevin Fontanilla Exam",
+  "description": "Domain Driven Design",
   "main": "index.js",
   "scripts": {
-    "migrate": "cross-env NODE_PATH=. NODE_ENV=local ts-node src/migration.ts",
+    "migrate": "tsc config/database.ts && npm run start:migration",
+    "start:migration": "npx sequelize db:migrate",
     "start": "cross-env NODE_PATH=. NODE_ENV=local ts-node src/server.ts"
   },
-  "author": "Kevin Fontanilla",
+  "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/express": "^4.17.13",
@@ -17,12 +18,19 @@
     "body-parser": "^1.19.1",
     "compression": "^1.7.4",
     "cross-env": "^7.0.3",
+    "dotenv": "^16.0.1",
     "express": "^4.17.2",
     "express-routes-catalogue": "^1.1.0",
     "http-status": "^1.5.0",
     "mongoose": "^6.2.0",
+    "mysql2": "^2.3.3",
     "nodemon": "^2.0.15",
+    "sequelize": "^6.20.1",
+    "structure": "^2.0.1",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.5"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.4.1"
   }
 }

@@ -1,7 +1,7 @@
 import container from './container';
 import { userModel } from './infra/database/mongo/models/userModel';
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/emapta');
+mongoose.connect('mongodb://localhost:27017/placester');
 
 const jsonPlaceHolderClient = container.resolve('jsonPlaceHolderClient');
 
@@ -23,7 +23,7 @@ class Migration {
         })
       );
     } catch (error) {
-      console.error(error);
+      console.error('GET_PHOTOS_ERROR', error);
     }
 
     try {
