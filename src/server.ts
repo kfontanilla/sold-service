@@ -1,5 +1,7 @@
 import express from 'express';
 import { config } from 'process';
+import swaggerUi from 'swagger-ui-express'
+import * as Document from './utils/swagger/swagger-doc.json'
 
 // // Routes configuration
 const routes = require('./interfaces/http/router/routes');
@@ -29,6 +31,7 @@ class Server {
 
     // load up the routes
     this.app.use(routes());
+    this.app.use("/swagger-doc", swaggerUi.serve, swaggerUi.setup(Document));
 
     // Show available endpoints in the terminal
     routeList.default.terminal(this.app);
