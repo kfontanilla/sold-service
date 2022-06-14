@@ -19,28 +19,23 @@ export class BaseRDSRepository {
   }
 
   /**
-   * Gets all entries based on the id provided. If no id was supplied, this will return ALL rows in the table.
+   * Gets a single entry based on the search options provided. If no options was supplied, this will return the FIRST row in the table.
    *
-   * @param {Number} id The search id. If null, this will return ALL rows in the table.
+   * @param {Object} [options = null] The search options. If null, this will return the FIRST row in the table.
    */
-  async getById(id: Number) {
-    return this.model.find({
-      where: {
-        id,
-      },
-    })
+  async getOne(options: object | null = null) {
+    if (options) {
+      return this.model.findOne(options)
+    }
+    return this.model.findOne()
   }
 
   /**
-   * Gets all entries based on the id provided. If no id was supplied, this will return ALL rows in the table.
+   * Gets the entry by id
    *
-   * @param {Number} id The search id. If null, this will return ALL rows in the table.
+   * @return {Promise<object|null>} Will return the first matching entry, or null if not found
    */
-  async deleteById(id: Number) {
-    return this.model.destroy({
-      where: {
-        id,
-      },
-    })
+  async getById(id: number): Promise<object | null> {
+    return this.getOne({ where: { id } })
   }
 }
