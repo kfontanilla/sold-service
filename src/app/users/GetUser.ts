@@ -9,6 +9,7 @@ class GetUser {
       const {
         params: { id },
       } = req;
+
       const data = await this.usersRepository.getById(id);
       res.json(data);
     } catch (error) {
