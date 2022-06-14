@@ -40,17 +40,34 @@ module.exports = (sequelize: any, DataTypes: any) => {
         type: DataTypes.JSON,
         field: 'AdditionalHeaders',
       },
-      UseProxy: {
-        type: DataTypes.TINYINT(1),
-        field: 'UseProxy',
+      RequestLimit: {
+        type: DataTypes.INT,
+        field: 'RequestLimit',
       },
-      UseProxy: {
+      IsActive: {
         type: DataTypes.TINYINT(1),
-        field: 'UseProxy',
+        field: 'IsActive',
       },
-      UseProxy: {
-        type: DataTypes.TINYINT(1),
-        field: 'UseProxy',
+      RunIntervalMinutes: {
+        type: DataTypes.INT,
+        field: 'RunIntervalMinutes',
+      },
+      AdditionalConfig: {
+        type: DataTypes.JSON,
+        field: 'AdditionalConfig',
+      },
+      CreatedAt: {
+        type: DataTypes.DATETIME, 
+        defaultValue: DataTypes.NOW,
+        field: 'CreatedAt',
+      },
+      UpdatedAt: {
+        type: DataTypes.DATETIME,
+        field: 'AdditionalConfig',
+      },
+      DeletedAt: {
+        type: DataTypes.JSON,
+        field: 'AdditionalConfig',
       },
     },
     {
