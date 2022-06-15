@@ -1,6 +1,6 @@
 module.exports = (sequelize: any, DataTypes: any) => {
-    class ListingTransaction extends Model {}
-    ListingTransaction.init(
+    class ServiceStat extends Model {}
+    ServiceStat.init(
       {
         Id: {
           type: DataTypes.BIGINT,
@@ -49,9 +49,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
       {
         sequelize,
         underscored: true,
-        tableName: 'listing_transactions',
+        tableName: 'service_stats',
       }
     );
-    return ListingTransaction;
+    return ServiceStat;
   };
   
