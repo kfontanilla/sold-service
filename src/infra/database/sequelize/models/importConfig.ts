@@ -40,7 +40,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       UseProxy: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.TINYINT(1),
         field: 'UseProxy',
         defaultValue: 0,
         allowNull: false,
@@ -56,7 +56,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       IsActive: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.TINYINT(1),
         field: 'IsActive',
         defaultValue: 0,
         allowNull: false,

@@ -15,9 +15,10 @@ module.exports = (sequelize: any, DataTypes: any) => {
           allowNull: false,
         },
         DisplayAsSold: {
-          type: DataTypes.BOOLEAN,
+          type: DataTypes.TINYINT(1),
           field: 'DisplayAsSold',
           allowNull: false,
+          defaulValue: 0,
         },
         ListingKey: {
             type: DataTypes.STRING(128),
@@ -60,12 +61,12 @@ module.exports = (sequelize: any, DataTypes: any) => {
             allowNull: true,
         },
         LeaseConsideredYN: {
-            type: DataTypes.STRING(1),
+            type: DataTypes.CHAR(1),
             field: 'LeaseConsideredYN',
             allowNull: true,
         },
         HomeWarrantyYN: {
-            type: DataTypes.STRING(1),
+            type: DataTypes.CHAR(1),
             field: 'HomeWarrantyYN',
             allowNull: true,
         },
