@@ -30,12 +30,12 @@ module.exports = (sequelize: any, DataTypes: any) => {
           allowNull: true,
         },
         LastSuccessfulRun: {
-          type: DataTypes.DATETIME,
+          type: DataTypes.DATE,
           field: 'LastSuccessfulRun',
           allowNull: true,
         },
         LastScheduledRun: {
-            type: DataTypes.DATETIME,
+            type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             field: 'LastScheduledRun',
             allowNull: false,
