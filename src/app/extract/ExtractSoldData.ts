@@ -16,16 +16,17 @@ class ExtractSoldData {
 
       const soldData = await this.getSoldData(providerType)
 
-      this.responseFormatter.success(response, soldData)
+      return this.responseFormatter.success(response, soldData)
     } catch (error: any) {
       console.log('GET_SOLD_DATA_ERROR', error)
       const { message } = error
 
       if (message === INVALID_PATH_PARAMETER_ERROR) {
-        this.responseFormatter.badRequest(response);
+        return this.responseFormatter.badRequest(response)
       }
 
-      this.responseFormatter.internalServerError(response)
+      return this.responseFormatter.internalServerError(response)
+      
     }
   }
 
