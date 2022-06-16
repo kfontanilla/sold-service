@@ -11,10 +11,10 @@ class ExtractSoldData {
   async execute(request: any, response: any) {
     try {
       const {
-        params: { providerName },
+        params: { providerType },
       } = request
 
-      const soldData = await this.getSoldData(providerName)
+      const soldData = await this.getSoldData(providerType)
 
       this.responseFormatter.success(response, soldData)
     } catch (error: any) {
@@ -29,8 +29,8 @@ class ExtractSoldData {
     }
   }
 
-  async getSoldData(providerName: 'mlsGrid') {
-    if (providerName === 'mlsGrid') {
+  async getSoldData(providerType: 'mlsGrid') {
+    if (providerType === 'mlsGrid') {
       return await this.mlsGridClient.getSolds()
     }
 
