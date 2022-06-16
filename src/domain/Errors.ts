@@ -1,0 +1,18 @@
+// HTTP Errors
+// Bad request
+const BAD_REQUEST = 'BAD_REQUEST'
+// Internal server error
+const INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR'
+
+// Validation Errors
+// Invalid path parameter
+const INVALID_PATH_PARAMETER_ERROR = 'INVALID_PATH_PARAMETER_ERROR'
+// Invalid request body
+const INVALID_REQUEST_BODY_ERROR = 'INVALID_REQUEST_BODY_ERROR'
+
+export = {
+  BAD_REQUEST,
+  INTERNAL_SERVER_ERROR,
+  INVALID_PATH_PARAMETER_ERROR,
+  INVALID_REQUEST_BODY_ERROR,
+}
