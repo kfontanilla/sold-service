@@ -1,6 +1,6 @@
 const { INVALID_PATH_PARAMETER_ERROR } = require('src/domain/Errors')
 
-class ExtractSoldData {
+class GetSoldData {
   private readonly mlsGridClient
   private readonly responseFormatter
   constructor({ mlsGridClient, responseFormatter }: any) {
@@ -39,4 +39,4 @@ class ExtractSoldData {
   }
 }
 
-export default ExtractSoldData
+export default GetSoldData

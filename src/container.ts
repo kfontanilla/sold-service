@@ -2,7 +2,7 @@ const { createContainer } = require('awilix');
 const configs = require('../config');
 const { database, models } = require('./infra/database/sequelize/models');
 const usersOperations = require('src/app/users');
-const extractOperations = require('src/app/extract');
+const soldsOperations = require('src/app/solds');
 const jsonPlaceHolderClient = require('src/interfaces/json-place-holder');
 const mlsGridClient = require('src/interfaces/mls-grid');
 import http from './infra/http';
@@ -30,7 +30,7 @@ container.registerClass(utilOperations);
 container.registerClass(repositories);
 
 container.registerClass(usersOperations);
-container.registerClass(extractOperations);
+container.registerClass(soldsOperations);
 
 container.registerClass(jsonPlaceHolderClient);
 container.registerClass(mlsGridClient);
