@@ -1,9 +1,7 @@
 export class BaseRDSRepository {
   model: any
-  domain: any
-  constructor(model: any, domain: any) {
+  constructor(model: any) {
     this.model = model
-    this.domain = domain
   }
 
   /**

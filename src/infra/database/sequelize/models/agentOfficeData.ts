@@ -1,3 +1,5 @@
+import { Model } from 'sequelize';
+
 module.exports = (sequelize: any, DataTypes: any) => {
     class AgentOfficeData extends Model {}
     AgentOfficeData.init(
