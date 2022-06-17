@@ -9,7 +9,7 @@ const routes = () => {
   router.get('/users/:id', (...args: any) => container.resolve('GetUser').execute(...args));
   router.delete('/users/:id', (...args: any) => container.resolve('DeleteUser').execute(...args));
 
-  router.get('/extract/soldData/:providerType', (...args: any) => container.resolve('ExtractSoldData').execute(...args));
+  router.get('/solds/:providerType', (...args: any) => container.resolve('GetSoldData').execute(...args));
 
   // Show available endpoints in the terminal
   return router;
