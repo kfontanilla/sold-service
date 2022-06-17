@@ -1,4 +1,4 @@
-const ListingData = attributes({
+export interface ListingData {
   Id: Number,
   ImportConfigId: Number,
   DisplayAsSold: Number,
@@ -33,6 +33,4 @@ const ListingData = attributes({
   MediaGroup: JSON,
   ShowingGroup: JSON,
   RemarksGroup: JSON,
-})(class ListingData {});
-
-module.exports = ListingData;
+}

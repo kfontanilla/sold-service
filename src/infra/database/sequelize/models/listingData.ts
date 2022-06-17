@@ -1,3 +1,5 @@
+import { Model } from 'sequelize';
+
 module.exports = (sequelize: any, DataTypes: any) => {
     class ListingData extends Model {}
     ListingData.init(
@@ -18,7 +20,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
           type: DataTypes.TINYINT(1),
           field: 'DisplayAsSold',
           allowNull: false,
-          defaulValue: 0,
+          defaultValue: 0,
         },
         ListingKey: {
             type: DataTypes.STRING(128),

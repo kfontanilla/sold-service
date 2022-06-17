@@ -1,3 +1,5 @@
+import { Model } from 'sequelize';
+
 module.exports = (sequelize: any, DataTypes: any) => {
     class PropertyDetail extends Model {}
     PropertyDetail.init(

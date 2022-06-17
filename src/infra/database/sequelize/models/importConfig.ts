@@ -1,3 +1,5 @@
+import { Model } from 'sequelize';
+
 module.exports = (sequelize: any, DataTypes: any) => {
   class ImportConfig extends Model {}
   ImportConfig.init(
@@ -51,7 +53,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       RequestLimit: {
-        type: DataTypes.INT,
+        type: DataTypes.INTEGER,
         field: 'RequestLimit',
         allowNull: true,
       },
@@ -62,7 +64,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: false,
       },
       RunIntervalMinutes: {
-        type: DataTypes.INT,
+        type: DataTypes.INTEGER,
         field: 'RunIntervalMinutes',
         defaultValue: 60,
         allowNull: false,

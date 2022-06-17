@@ -1,1 +1,0 @@
-const { attributes } = require('structure');
