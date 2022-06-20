@@ -1,5 +1,4 @@
 const { INVALID_PATH_PARAMETER_ERROR } = require('src/domain/Errors')
-import GetImportConfig from "../importconfigs/GetImportConfig"
 
 class ExtractData {
   private readonly bridgeClient
@@ -18,11 +17,11 @@ class ExtractData {
       const {
         params: { LegacyImportId },
       } = request
-
-      console.log(LegacyImportId)
       const importData = await this.getImportConfig.getImportData(LegacyImportId)
+      // call bridge client interface to extract data from provider
+      const soldData = await this.bridgeClient.getSolds(importData)
 
-      return this.responseFormatter.success(response, importData)
+      return this.responseFormatter.success(response, soldData)
     } catch (error: any) {
       console.log('GET_SOLD_DATA_ERROR', error)
       const { message } = error

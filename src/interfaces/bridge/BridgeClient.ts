@@ -7,36 +7,33 @@ class BridgeClient {
   }
 
   // get sold by LegacyImportId
-  async getSolds(LegacyImportId: string) {
+  async getSolds(importConfig: any) {
     try {
-      // const importConfig = await this.getImportConfig(LegacyImportId)
 
-      // console.log(importConfig.AdditionalConfig)
+      const queryUrl = this.buildQueryUrl(importConfig)
+
       const options = {
         headers: {
-          Authorization: authorization,
           'Accept-Encoding': 'gzip, deflate, br',
         },
       }
- 
 
-      // return data
+      const { data } = await this.httpClient.get(queryUrl,
+        options
+      )
+
+      return data
     } catch (error) {
       throw error
     }
   }
 
-  // get DB data from import_config
-  // async getImportConfig(LegacyImportId: string) {
-
-  //   console.log(LegacyImportId)
-  //   const data = await this.importConfigRepository.getOne({LegacyImportId: LegacyImportId});
-
-  //   return data
-  // }
-
-  async buildQueryUrl(ImportConfig: any){
-
+  buildQueryUrl(ImportConfig: any){
+    try {
+      return ImportConfig.ProviderUrl + ImportConfig.AdditionalConfig.sold.type + '?access_token=' + ImportConfig.ProviderPassword + '&$filter=' + encodeURI(ImportConfig.AdditionalConfig.sold.search)
+    } catch (error) {
+      throw error
+    }
   }
 }
 

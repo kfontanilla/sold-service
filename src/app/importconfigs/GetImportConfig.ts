@@ -10,7 +10,7 @@ class GetImportConfig {
             params: { LegacyImportId },
           } = req;
     
-          console.log(LegacyImportId);
+          console.log('Fetching import config: ', LegacyImportId);
           const data = await this.importConfigRepository.getByLegacyImportId(LegacyImportId);
           res.json(data);
         } catch (error) {
@@ -20,7 +20,7 @@ class GetImportConfig {
 
     async getImportData(LegacyImportId: any) {
         try {
-            console.log(LegacyImportId);
+            console.log('Fetching import config: ', LegacyImportId);
             const data = await this.importConfigRepository.getByLegacyImportId(LegacyImportId);
 
             return data
