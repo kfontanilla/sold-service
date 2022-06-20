@@ -20,7 +20,7 @@ class ExtractData {
       } = request
 
       console.log(LegacyImportId)
-      const importData = await this.getImportConfig.execute(LegacyImportId)
+      const importData = await this.getImportConfig.getImportData(LegacyImportId)
 
       return this.responseFormatter.success(response, importData)
     } catch (error: any) {
