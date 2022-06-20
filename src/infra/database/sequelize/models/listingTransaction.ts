@@ -44,7 +44,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       },
       {
         sequelize,
-        underscored: true,
+        underscored: false,
         tableName: 'listing_transactions',
       }
     );

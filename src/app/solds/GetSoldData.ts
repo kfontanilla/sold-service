@@ -2,9 +2,11 @@ const { INVALID_PATH_PARAMETER_ERROR } = require('src/domain/Errors')
 
 class GetSoldData {
   private readonly mlsGridClient
+  private readonly bridgeClient
   private readonly responseFormatter
-  constructor({ mlsGridClient, responseFormatter }: any) {
+  constructor({ mlsGridClient, responseFormatter, bridgeClient }: any) {
     this.mlsGridClient = mlsGridClient
+    this.bridgeClient = bridgeClient
     this.responseFormatter = responseFormatter
   }
 
@@ -37,6 +39,14 @@ class GetSoldData {
 
     throw new Error(INVALID_PATH_PARAMETER_ERROR)
   }
+
+  async getSold(LegacyImportId: string) {
+      
+      return await this.bridgeClient.getSolds(LegacyImportId)
+
+    throw new Error(INVALID_PATH_PARAMETER_ERROR)
+  }
+
 }
 
 export default GetSoldData
