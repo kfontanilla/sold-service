@@ -75,6 +75,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       {
         sequelize,
         underscored: false,
+        timestamps: false,
         tableName: 'location_data',
       }
     );

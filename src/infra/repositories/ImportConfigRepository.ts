@@ -5,8 +5,7 @@ class ImportConfigRepository extends BaseRDSRepository {
     super(ImportConfigModel);
   }
 
-  
-  async getByLegacyImportId(LegacyImportId: number): Promise<object | null> {
+  async getByLegacyImportId(LegacyImportId: string): Promise<object | null> {
     return this.getOne({ where: { LegacyImportId } })
   }
 }

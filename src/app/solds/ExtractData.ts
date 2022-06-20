@@ -4,12 +4,17 @@ class ExtractData {
   private readonly bridgeClient
   private readonly responseFormatter
   private readonly getImportConfig
-  constructor(
-    { bridgeClient, responseFormatter, GetImportConfig }: any
-    ) {
+  private readonly setListingData
+  constructor({
+    bridgeClient,
+    responseFormatter,
+    GetImportConfig,
+    SetListingData,
+  }: any) {
     this.bridgeClient = bridgeClient
     this.responseFormatter = responseFormatter
     this.getImportConfig = GetImportConfig
+    this.setListingData = SetListingData
   }
 
   async execute(request: any, response: any) {
@@ -17,9 +22,20 @@ class ExtractData {
       const {
         params: { LegacyImportId },
       } = request
-      const importData = await this.getImportConfig.getImportData(LegacyImportId)
+      const importData = await this.getImportConfig.get(LegacyImportId)
+      //base on providerType - call the appropriate Interface
+
       // call bridge client interface to extract data from provider
       const soldData = await this.bridgeClient.getSolds(importData)
+      // console.log(soldData['@odata.nextLink'])
+      // iterate over soldData
+      const listData = soldData.value[0]
+      const ImportConfigId = importData.Id
+      listData.ImportConfigId = ImportConfigId
+      const listingData = await this.setListingData.set(
+        ImportConfigId,
+        listData
+      )
 
       return this.responseFormatter.success(response, soldData)
     } catch (error: any) {
@@ -31,7 +47,6 @@ class ExtractData {
       }
 
       return this.responseFormatter.internalServerError(response)
-      
     }
   }
 }

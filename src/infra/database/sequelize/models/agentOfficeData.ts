@@ -140,6 +140,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       {
         sequelize,
         underscored: false,
+        timestamps: false,
         tableName: 'agent_office_data',
       }
     );

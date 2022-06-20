@@ -15,6 +15,7 @@ if (configuration) {
     baseFolder: __dirname,
   });
 
+  console.log(models)
   module.exports = {
     sequelize,
     models,

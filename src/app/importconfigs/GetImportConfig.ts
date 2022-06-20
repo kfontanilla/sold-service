@@ -18,7 +18,7 @@ class GetImportConfig {
         }
       }
 
-    async getImportData(LegacyImportId: any) {
+    async get(LegacyImportId: any) {
         try {
             console.log('Fetching import config: ', LegacyImportId);
             const data = await this.importConfigRepository.getByLegacyImportId(LegacyImportId);
