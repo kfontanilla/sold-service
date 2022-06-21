@@ -1,34 +1,39 @@
 class GetImportConfig {
-    importConfigRepository: any;
-    constructor({ importConfigRepository }: { importConfigRepository: any }) {
-      this.importConfigRepository = importConfigRepository;
-    }
+  importConfigRepository: any
+  private readonly responseFormatter
+  constructor({ importConfigRepository, responseFormatter }: any) {
+    this.importConfigRepository = importConfigRepository
+    this.responseFormatter = responseFormatter
+  }
 
-    async execute(req: any, res: any) {
-        try {
-          const {
-            params: { LegacyImportId },
-          } = req;
-    
-          console.log('Fetching import config: ', LegacyImportId);
-          const data = await this.importConfigRepository.getByLegacyImportId(LegacyImportId);
-          res.json(data);
-        } catch (error) {
-          console.log('GET_IMPORT_CONFIG_BY_LEGACYIMPORT_ID_ERROR', error);
-        }
-      }
+  async execute(req: any, res: any) {
+    try {
+      const {
+        params: { LegacyImportId },
+      } = req
 
-    async get(LegacyImportId: any) {
-        try {
-            console.log('Fetching import config: ', LegacyImportId);
-            const data = await this.importConfigRepository.getByLegacyImportId(LegacyImportId);
-
-            return data
-          } catch (error) {
-            console.log('GET_IMPORT_CONFIG_BY_LEGACYIMPORT_ID_ERROR', error);
-          }
+      console.log('Fetching import config: ', LegacyImportId)
+      const data = await this.importConfigRepository.getByLegacyImportId(
+        LegacyImportId
+      )
+      return this.responseFormatter.success(res, data)
+    } catch (error) {
+      console.log('GET_IMPORT_CONFIG_BY_LEGACYIMPORT_ID_ERROR', error)
     }
   }
-  
-  export default GetImportConfig;
-  
+
+  async get(LegacyImportId: any) {
+    try {
+      console.log('Fetching import config: ', LegacyImportId)
+      const data = await this.importConfigRepository.getByLegacyImportId(
+        LegacyImportId
+      )
+
+      return data
+    } catch (error) {
+      console.log('GET_IMPORT_CONFIG_BY_LEGACYIMPORT_ID_ERROR', error)
+    }
+  }
+}
+
+export default GetImportConfig

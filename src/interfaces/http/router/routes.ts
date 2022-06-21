@@ -16,7 +16,7 @@ const routes = () => {
   router.get('/importconfigs', (...args: any) =>
     container.resolve('GetImportConfigs').execute(...args)
   )
-  router.get('/importconfigs/:LegacyImportId', (...args: any) =>
+  router.get('/importconfig/:LegacyImportId', (...args: any) =>
     container.resolve('GetImportConfig').execute(...args)
   )
 
