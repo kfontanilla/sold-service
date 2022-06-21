@@ -3,22 +3,35 @@ const { INVALID_PATH_PARAMETER_ERROR } = require('src/domain/Errors')
 class GetSoldData {
   private readonly mlsGridClient
   private readonly responseFormatter
-  constructor({ mlsGridClient, responseFormatter }: any) {
+  private readonly logger
+  constructor({ mlsGridClient, responseFormatter, logger }: any) {
     this.mlsGridClient = mlsGridClient
     this.responseFormatter = responseFormatter
+    this.logger = logger
   }
 
   async execute(request: any, response: any) {
-    try {
-      const {
-        params: { providerType },
-      } = request
+    const {
+      params: { providerType },
+    } = request
 
+    try {
       const soldData = await this.getSoldData(providerType)
+
+      this.logger.info({
+        message: 'Success fetch of sold data from data provider',
+        providerType,
+        soldData,
+      })
 
       return this.responseFormatter.success(response, soldData)
     } catch (error: any) {
-      console.log('GET_SOLD_DATA_ERROR', error)
+      this.logger.error({
+        message: 'Error while fetching sold data from data provider',
+        providerType,
+        error,
+      })
+
       const { message } = error
 
       if (message === INVALID_PATH_PARAMETER_ERROR) {
