@@ -5,23 +5,26 @@ class ExtractData {
   private readonly responseFormatter
   private readonly getImportConfig
   private readonly setListingData
+  private readonly logger
   constructor({
     bridgeClient,
     responseFormatter,
     GetImportConfig,
     SetListingData,
+    logger,
   }: any) {
     this.bridgeClient = bridgeClient
     this.responseFormatter = responseFormatter
     this.getImportConfig = GetImportConfig
     this.setListingData = SetListingData
+    this.logger = logger
   }
 
   async execute(request: any, response: any) {
+    const {
+      params: { LegacyImportId },
+    } = request
     try {
-      const {
-        params: { LegacyImportId },
-      } = request
       const importData = await this.getImportConfig.get(LegacyImportId)
       //base on providerType - call the appropriate Interface
 
@@ -39,6 +42,13 @@ class ExtractData {
 
       return this.responseFormatter.success(response, soldData)
     } catch (error: any) {
+
+      this.logger.error({
+        message: 'Error while fetching sold data from data provider',
+        LegacyImportId,
+        error,
+      })
+
       console.log('GET_SOLD_DATA_ERROR', error)
       const { message } = error
 

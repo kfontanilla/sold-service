@@ -1,9 +1,9 @@
-import { BaseRDSRepository } from './base/BaseRDSRepository';
+import { BaseRDSRepository } from './base/BaseRDSRepository'
 
 class ListingDataRepository extends BaseRDSRepository {
   constructor({ ListingDatumModel }: any) {
-    super(ListingDatumModel);
+    super(ListingDatumModel)
   }
 }
 
-module.exports = ListingDataRepository;
+module.exports = ListingDataRepository
