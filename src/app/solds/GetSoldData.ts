@@ -16,7 +16,7 @@ class GetSoldData {
         params: { providerType },
       } = request
 
-      const soldData = await this.getSoldData(providerType)
+      const soldData = await this.getSoldDataByProviderType(providerType)
 
       return this.responseFormatter.success(response, soldData)
     } catch (error: any) {
@@ -28,11 +28,10 @@ class GetSoldData {
       }
 
       return this.responseFormatter.internalServerError(response)
-      
     }
   }
 
-  async getSoldData(providerType: 'mlsGrid') {
+  async getSoldDataByProviderType(providerType: 'mlsGrid') {
     if (providerType === 'mlsGrid') {
       return await this.mlsGridClient.getSolds()
     }
@@ -40,13 +39,9 @@ class GetSoldData {
     throw new Error(INVALID_PATH_PARAMETER_ERROR)
   }
 
-  async getSold(LegacyImportId: string) {
-      
-      return await this.bridgeClient.getSolds(LegacyImportId)
-
-    throw new Error(INVALID_PATH_PARAMETER_ERROR)
+  async getSoldDataByImportId(LegacyImportId: string) {
+    return await this.bridgeClient.getSolds(LegacyImportId)
   }
-
 }
 
 export default GetSoldData
