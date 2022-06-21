@@ -36,4 +36,18 @@ export class BaseRDSRepository {
   async getById(id: number): Promise<object | null> {
     return this.getOne({ where: { id } })
   }
+
+  async save(doc: any) {
+
+    const savedDoc =  this.model.build(doc) 
+    try {
+      // console.log(doc);
+
+      return await savedDoc.save()
+
+    } catch (error) {
+      
+      return error
+    }
+  }
 }

@@ -81,19 +81,20 @@ module.exports = (sequelize: any, DataTypes: any) => {
       },
       UpdatedAt: {
         type: DataTypes.DATE,
-        field: 'AdditionalConfig',
+        field: 'UpdatedAt',
         defaultValue: DataTypes.NOW,
         allowNull: false,
       },
       DeletedAt: {
-        type: DataTypes.JSON,
-        field: 'AdditionalConfig',
+        type: DataTypes.DATE,
+        field: 'DeletedAt',
         allowNull: true,
       },
     },
     {
       sequelize,
-      underscored: true,
+      underscored: false,
+      timestamps: false,
       tableName: 'import_config',
     }
   );

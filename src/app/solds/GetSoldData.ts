@@ -26,7 +26,6 @@ class GetSoldData {
       }
 
       return this.responseFormatter.internalServerError(response)
-      
     }
   }
 

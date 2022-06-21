@@ -50,7 +50,8 @@ module.exports = (sequelize: any, DataTypes: any) => {
     },
     {
       sequelize,
-      underscored: true,
+      underscored: false,
+      timestamps: false,
       tableName: 'service_stats',
     }
   )
