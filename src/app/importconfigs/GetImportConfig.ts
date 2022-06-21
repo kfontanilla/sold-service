@@ -37,11 +37,11 @@ class GetImportConfig {
       const importConfig =
         await this.importConfigRepository.getByLegacyImportId(LegacyImportId)
 
-      this.logger.info({
-        message: 'Success fetch import config by Legacy import Id',
-        importConfig,
-        LegacyImportId,
-      })
+      // this.logger.info({
+      //   message: 'Success fetch import config by Legacy import Id',
+      //   importConfig,
+      //   LegacyImportId,
+      // })
 
       return importConfig
     } catch (error) {

@@ -38,16 +38,12 @@ export class BaseRDSRepository {
   }
 
   async save(doc: any) {
-
-    const savedDoc =  this.model.build(doc) 
     try {
-      // console.log(doc);
+      const saveData = await this.model.create(doc)
 
-      return await savedDoc.save()
-
+      return saveData
     } catch (error) {
-      
-      return error
+      throw error
     }
   }
 }
