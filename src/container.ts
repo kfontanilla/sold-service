@@ -1,4 +1,4 @@
-const { createContainer } = require('awilix')
+const { createContainer, Lifetime } = require('awilix')
 const configs = require('../config')
 const { database, models } = require('./infra/database/sequelize/models')
 const soldsOperations = require('src/app/solds')
@@ -8,13 +8,18 @@ const jsonPlaceHolderClient = require('src/interfaces/json-place-holder')
 const mlsGridClient = require('src/interfaces/mls-grid')
 const bridgeClient = require('src/interfaces/bridge')
 import http from './infra/http'
+import { logger } from './infra/logger/Logger'
 import utilOperations from './utils'
 import mongoClient from './infra/database/mongo/mongoClient'
 import repositories from './infra/repositories'
 
 const container = createContainer()
 
-container.registerValue({ configs })
+container
+  .registerFunction({
+    logger: [logger, { lifetime: Lifetime.SINGLETON }],
+  })
+  .registerValue({ configs })
 
 // NoSQL
 // container.registerClass(mongoClient);

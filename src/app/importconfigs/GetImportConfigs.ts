@@ -1,17 +1,28 @@
 class GetImportConfigs {
-  importConfigRepository: any
+  private readonly importConfigRepository
   private readonly responseFormatter
-  constructor({ importConfigRepository, responseFormatter }: any) {
+  private readonly logger
+  constructor({ importConfigRepository, responseFormatter, logger }: any) {
     this.importConfigRepository = importConfigRepository
     this.responseFormatter = responseFormatter
+    this.logger = logger
   }
 
   async execute(req: any, res: any) {
     try {
-      const data = await this.importConfigRepository.getAll()
-      return this.responseFormatter.success(res, data)
+      const importConfig = await this.importConfigRepository.getAll()
+
+      this.logger.info({
+        message: 'Success fetch of import config',
+        details: importConfig,
+      })
+
+      return this.responseFormatter.success(res, importConfig)
     } catch (error) {
-      console.log('GET_IMPORT_CONFIGS_ERROR', error)
+      this.logger.error({
+        message: 'Error while fetching import config',
+        details: error,
+      })
     }
   }
 }
