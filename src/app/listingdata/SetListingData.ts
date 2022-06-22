@@ -28,8 +28,13 @@ class SetListingData {
       // use for saving to Agent Office Data, Listing
       // await this.setAgentOfficeData(ListingData)
       // await this.setListingTransaction(ListingData)
+<<<<<<< HEAD
       // await this.setLocationData(ListingData)
       // const PropertyDataResult = await this.setPropertyData(ListingData)
+=======
+      await this.setLocationData(ListingData)
+      const PropertyDataResult = await this.propertyDetailRepository.setPropertyData(ListingData)
+>>>>>>> develop
       // ListingData.PropertyDataId = PropertyDataResult.Id
       // await this.setPropertyDetail(ListingData)
 
@@ -47,6 +52,7 @@ class SetListingData {
       })
     }
   }
+<<<<<<< HEAD
 
   async setAgentOfficeData(ListingData: any) {
     const ListingDataId = ListingData.ListingDataId
@@ -151,6 +157,8 @@ class SetListingData {
       })
     }
   }
+=======
+>>>>>>> develop
 }
 
 export default SetListingData
