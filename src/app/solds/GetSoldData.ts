@@ -55,11 +55,8 @@ class GetSoldData {
   async processData(result: any) {
     const { importData, soldData } = result
 
-    // console.log(soldData)
-    // console.log(importData)
     for (const key in soldData.value) {
       if (parseInt(key) <= 20) {
-        console.log(key)
         const listingData = soldData.value[key]
         listingData.ImportConfigId = importData.Id
         await this.setListingData.set(importData.Id, listingData)
