@@ -54,15 +54,13 @@ class GetSoldData {
   async processData(result: any) {
     const { importData, soldData } = result
     let preProcessedData = []
+    console.time()
     for (const key in soldData.value) {
-      // if (parseInt(key) <= 20) {
       const listingData = soldData.value[key]
       listingData.ImportConfigId = importData.Id
       preProcessedData.push(listingData)
-      // }
     }
     await this.setListingData.set(importData.Id, preProcessedData)
-    
   }
 }
 

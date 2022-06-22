@@ -7,7 +7,7 @@ class AgentOfficeDataRepository extends BaseRDSRepository {
 
   async setAgentOfficeData(ListingData: any) {
     try {
-      return await this.save(ListingData)
+      return await this.insertMany(ListingData)
     } catch (error) {
       throw error
     }
