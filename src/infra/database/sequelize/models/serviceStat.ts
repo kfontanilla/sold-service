@@ -1,4 +1,4 @@
-import { Model } from 'sequelize';
+import { Model } from 'sequelize'
 
 module.exports = (sequelize: any, DataTypes: any) => {
   class ServiceStat extends Model {}

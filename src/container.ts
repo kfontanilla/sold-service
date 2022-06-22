@@ -4,11 +4,12 @@ const { database, models } = require('./infra/database/sequelize/models')
 const soldsOperations = require('src/app/solds')
 const importConfigOperations = require('src/app/importconfigs')
 const listingDataOperations = require('src/app/listingdata')
+
 const jsonPlaceHolderClient = require('src/interfaces/json-place-holder')
 const mlsGridClient = require('src/interfaces/mls-grid')
 const bridgeClient = require('src/interfaces/bridge')
 import http from './infra/http'
-import { logger } from './infra/logger/Logger'
+import { logger } from './infra/logger/logger'
 import utilOperations from './utils'
 import mongoClient from './infra/database/mongo/mongoClient'
 import repositories from './infra/repositories'

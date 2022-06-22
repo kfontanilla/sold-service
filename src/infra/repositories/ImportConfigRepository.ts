@@ -1,8 +1,8 @@
-import { BaseRDSRepository } from './base/BaseRDSRepository';
+import { BaseRDSRepository } from './base/BaseRDSRepository'
 
 class ImportConfigRepository extends BaseRDSRepository {
   constructor({ ImportConfigModel }: any) {
-    super(ImportConfigModel);
+    super(ImportConfigModel)
   }
 
   async getByLegacyImportId(LegacyImportId: string): Promise<object | null> {
@@ -10,4 +10,4 @@ class ImportConfigRepository extends BaseRDSRepository {
   }
 }
 
-module.exports = ImportConfigRepository;
+module.exports = ImportConfigRepository

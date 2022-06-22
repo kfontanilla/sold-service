@@ -1,4 +1,4 @@
-import { Model } from 'sequelize';
+import { Model } from 'sequelize'
 
 module.exports = (sequelize: any, DataTypes: any) => {
   class ImportConfig extends Model {}
@@ -75,7 +75,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       CreatedAt: {
-        type: DataTypes.DATE, 
+        type: DataTypes.DATE,
         field: 'CreatedAt',
         allowNull: false,
       },
@@ -97,6 +97,6 @@ module.exports = (sequelize: any, DataTypes: any) => {
       timestamps: false,
       tableName: 'import_config',
     }
-  );
-  return ImportConfig;
-};
+  )
+  return ImportConfig
+}

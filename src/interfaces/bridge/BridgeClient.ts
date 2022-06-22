@@ -25,14 +25,20 @@ class BridgeClient {
 
   buildQueryUrl(ImportConfig: any) {
     try {
-      return (
-        ImportConfig.ProviderUrl +
-        ImportConfig.AdditionalConfig.sold.type +
-        '?access_token=' +
-        ImportConfig.ProviderPassword +
-        '&$filter=' +
-        encodeURI(ImportConfig.AdditionalConfig.sold.search)
-      )
+
+      if(ImportConfig.AdditionalConfig.sold){
+        const addedResource = ( ImportConfig.AdditionalConfig.sold.addedResource ? '/' + ImportConfig.AdditionalConfig.sold.addedResource : '' )
+        return (
+          ImportConfig.ProviderUrl +
+          ImportConfig.AdditionalConfig.sold.type +
+          addedResource +
+          '?access_token=' +
+          ImportConfig.ProviderPassword +
+          '&$filter=' +
+          encodeURI(ImportConfig.AdditionalConfig.sold.search)
+        )
+      }
+      
     } catch (error) {
       throw error
     }

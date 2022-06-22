@@ -38,16 +38,22 @@ export class BaseRDSRepository {
   }
 
   async save(doc: any) {
-
-    const savedDoc =  this.model.build(doc) 
     try {
-      // console.log(doc);
+      const saveData = await this.model.create(doc)
 
-      return await savedDoc.save()
-
+      return saveData
     } catch (error) {
-      
-      return error
+      throw error
     }
+  }
+
+  /**
+   * Insert many data into table
+   * @param {object[]} dataSet The data set that will be inserted to table
+   * 
+   * @return {Promise<object|null>} Will return the query result.
+   */
+   async insertMany(dataSet: object[]): Promise<object|null> {
+    return this.model.bulkCreate(dataSet);
   }
 }

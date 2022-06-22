@@ -1,34 +1,44 @@
 const { INVALID_PATH_PARAMETER_ERROR } = require('src/domain/Errors')
 
 class GetSoldData {
-  private readonly mlsGridClient
-  private readonly responseFormatter
-  private readonly logger
-  constructor({ mlsGridClient, responseFormatter, logger }: any) {
-    this.mlsGridClient = mlsGridClient
+  [property: string]: any
+  constructor({
+    bridgeClient,
+    responseFormatter,
+    GetImportConfig,
+    SetListingData,
+    logger,
+  }: any) {
+    this.bridgeClient = bridgeClient
     this.responseFormatter = responseFormatter
+    this.getImportConfig = GetImportConfig
+    this.setListingData = SetListingData
     this.logger = logger
   }
 
   async execute(request: any, response: any) {
     const {
-      params: { providerType },
+      params: { LegacyImportId },
     } = request
-
     try {
-      const soldData = await this.getSoldData(providerType)
+      const importData = await this.getImportConfig.get(LegacyImportId)
+      //base on providerType - call the appropriate Interface
 
-      this.logger.info({
-        message: 'Success fetch of sold data from data provider',
-        providerType,
-        soldData,
+      // call bridge client interface to extract data from provider
+      const soldData = await this.bridgeClient.getSolds(importData)
+      // console.log(soldData['@odata.nextLink'])
+      // iterate over soldData
+      const processedData = await this.processData({
+        importData: importData,
+        soldData: soldData,
       })
 
-      return this.responseFormatter.success(response, soldData)
+      return this.responseFormatter.success(response, processedData)
     } catch (error: any) {
       this.logger.error({
-        message: 'Error while fetching sold data from data provider',
-        providerType,
+        message:
+          'EXTRACT_SOLD_DATA_ERROR: Error while fetching sold data from data provider',
+        LegacyImportId,
         error,
       })
 
@@ -42,12 +52,16 @@ class GetSoldData {
     }
   }
 
-  async getSoldData(providerType: 'mlsGrid') {
-    if (providerType === 'mlsGrid') {
-      return await this.mlsGridClient.getSolds()
-    }
+  async processData(result: any) {
+    const { importData, soldData } = result
 
-    throw new Error(INVALID_PATH_PARAMETER_ERROR)
+    for (const key in soldData.value) {
+      if (parseInt(key) <= 20) {
+        const listingData = soldData.value[key]
+        listingData.ImportConfigId = importData.Id
+        await this.setListingData.set(importData.Id, listingData)
+      }
+    }
   }
 }
 

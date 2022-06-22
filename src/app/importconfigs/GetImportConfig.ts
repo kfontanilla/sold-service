@@ -1,7 +1,5 @@
 class GetImportConfig {
-  private readonly importConfigRepository
-  private readonly responseFormatter
-  private readonly logger
+  [property: string]: any
   constructor({ importConfigRepository, responseFormatter, logger }: any) {
     this.importConfigRepository = importConfigRepository
     this.responseFormatter = responseFormatter
@@ -37,11 +35,11 @@ class GetImportConfig {
       const importConfig =
         await this.importConfigRepository.getByLegacyImportId(LegacyImportId)
 
-      this.logger.info({
-        message: 'Success fetch import config by Legacy import Id',
-        importConfig,
-        LegacyImportId,
-      })
+      // this.logger.info({
+      //   message: 'Success fetch import config by Legacy import Id',
+      //   importConfig,
+      //   LegacyImportId,
+      // })
 
       return importConfig
     } catch (error) {
