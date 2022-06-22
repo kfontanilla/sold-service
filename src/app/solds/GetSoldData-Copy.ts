@@ -1,9 +1,7 @@
 const { INVALID_PATH_PARAMETER_ERROR } = require('src/domain/Errors')
 
 class GetSoldData {
-  private readonly mlsGridClient
-  private readonly responseFormatter
-  private readonly logger
+  [property: string]: any
   constructor({ mlsGridClient, responseFormatter, logger }: any) {
     this.mlsGridClient = mlsGridClient
     this.responseFormatter = responseFormatter

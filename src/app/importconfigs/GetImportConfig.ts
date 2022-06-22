@@ -1,7 +1,5 @@
 class GetImportConfig {
-  private readonly importConfigRepository
-  private readonly responseFormatter
-  private readonly logger
+  [property: string]: any
   constructor({ importConfigRepository, responseFormatter, logger }: any) {
     this.importConfigRepository = importConfigRepository
     this.responseFormatter = responseFormatter

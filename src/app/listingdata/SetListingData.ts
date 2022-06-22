@@ -1,13 +1,5 @@
 class SetListingData {
-  private readonly agentOfficeDataRepository: any
-  private readonly listingDataRepository: any
-  private readonly listingTransactionRepository: any
-  private readonly locationDataRepository: any
-  private readonly logger
-  private readonly propertyDataRepository: any
-  private readonly propertyDetailRepository: any
-  private readonly serviceStatRepository: any
-
+  [property: string]: any
   constructor({
     agentOfficeDataRepository,
     listingDataRepository,
@@ -16,7 +8,6 @@ class SetListingData {
     logger,
     propertyDataRepository,
     propertyDetailRepository,
-    serviceStatRepository,
   }: any) {
     this.agentOfficeDataRepository = agentOfficeDataRepository
     this.listingDataRepository = listingDataRepository
@@ -25,7 +16,6 @@ class SetListingData {
     this.logger = logger
     this.propertyDataRepository = propertyDataRepository
     this.propertyDetailRepository = propertyDetailRepository
-    this.serviceStatRepository = serviceStatRepository
   }
 
   async set(ImportConfigId: string, ListingData: any) {
@@ -47,8 +37,8 @@ class SetListingData {
     } catch (error) {
       this.logger.error({
         message: 'SET_ListingDataResult_ERROR',
-        // ImportConfigId,
-        // error,
+        ImportConfigId,
+        error,
       })
     }
   }
@@ -68,8 +58,8 @@ class SetListingData {
     } catch (error) {
       this.logger.error({
         message: 'SET_AgentOfficeResult_ERROR',
-        // ListingId,
-        // error,
+        ListingId,
+        error,
       })
     }
   }
@@ -77,9 +67,8 @@ class SetListingData {
   async setListingTransaction(ListingData: any) {
     const ListingId = ListingData.Id
     try {
-      const ListingTransactionResult = await this.listingTransactionRepository.save(
-        ListingData
-      )
+      const ListingTransactionResult =
+        await this.listingTransactionRepository.save(ListingData)
       // this.logger.info({
       //   message: 'SET_ListingTransactionResult_SUCCESS',
       //   ListingId,
@@ -89,8 +78,8 @@ class SetListingData {
     } catch (error) {
       this.logger.error({
         message: 'SET_ListingTransactionResult_ERROR',
-        // ListingId,
-        // error,
+        ListingId,
+        error,
       })
     }
   }
@@ -110,8 +99,8 @@ class SetListingData {
     } catch (error) {
       this.logger.error({
         message: 'SET_LocationDataResult_ERROR',
-        // ListingId,
-        // error,
+        ListingId,
+        error,
       })
     }
   }
@@ -131,7 +120,7 @@ class SetListingData {
     } catch (error) {
       this.logger.error({
         message: 'SET_PropertyDataResult_ERROR',
-        // ListingId,
+        ListingId,
         error,
       })
     }
@@ -152,13 +141,11 @@ class SetListingData {
     } catch (error) {
       this.logger.error({
         message: 'SET_PropertyDetailResult_ERROR',
-        // ListingId,
-        // error,
+        ListingId,
+        error,
       })
     }
   }
-
- 
 }
 
 export default SetListingData

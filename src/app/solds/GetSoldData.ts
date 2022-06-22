@@ -1,11 +1,7 @@
 const { INVALID_PATH_PARAMETER_ERROR } = require('src/domain/Errors')
 
 class GetSoldData {
-  private readonly bridgeClient
-  private readonly responseFormatter
-  private readonly getImportConfig
-  private readonly setListingData
-  private readonly logger
+  [property: string]: any
   constructor({
     bridgeClient,
     responseFormatter,
@@ -66,10 +62,7 @@ class GetSoldData {
         console.log(key)
         const listingData = soldData.value[key]
         listingData.ImportConfigId = importData.Id
-        const listingDataResult = await this.setListingData.set(
-          importData.Id,
-          listingData
-        )
+        await this.setListingData.set(importData.Id, listingData)
       }
     }
   }
