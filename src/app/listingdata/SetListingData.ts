@@ -20,19 +20,24 @@ class SetListingData {
 
   async set(ImportConfigId: string, ListingData: any) {
     try {
-      const ListingDataResult = await this.listingDataRepository.save(
+      const ListingDataResult = await this.listingDataRepository.insertMany(
         ListingData
       )
       // check data for error
-      ListingData.ListingDataId = ListingDataResult.Id
+      // ListingData.ListingDataId = ListingDataResult.Id
       // use for saving to Agent Office Data, Listing
       // await this.setAgentOfficeData(ListingData)
       // await this.setListingTransaction(ListingData)
       // await this.setLocationData(ListingData)
-      const PropertyDataResult = await this.setPropertyData(ListingData)
+      // const PropertyDataResult = await this.setPropertyData(ListingData)
       // ListingData.PropertyDataId = PropertyDataResult.Id
       // await this.setPropertyDetail(ListingData)
 
+      this.logger.info({
+        message: 'SET_ListingDataResult_SUCCESS',
+        ImportConfigId,
+        ListingDataResult,
+      })
       return ListingDataResult
     } catch (error) {
       this.logger.error({
