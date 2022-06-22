@@ -46,4 +46,14 @@ export class BaseRDSRepository {
       throw error
     }
   }
+
+  /**
+   * Insert many data into table
+   * @param {object[]} dataSet The data set that will be inserted to table
+   * 
+   * @return {Promise<object|null>} Will return the query result.
+   */
+   async insertMany(dataSet: object[]): Promise<object|null> {
+    return this.model.bulkCreate(dataSet);
+  }
 }
