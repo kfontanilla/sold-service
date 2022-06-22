@@ -28,7 +28,7 @@ class SetListingData {
       // use for saving to Agent Office Data, Listing
       // await this.setAgentOfficeData(ListingData)
       // await this.setListingTransaction(ListingData)
-      await this.setLocationData(ListingData)
+      // await this.setLocationData(ListingData)
       const PropertyDataResult = await this.setPropertyData(ListingData)
       // ListingData.PropertyDataId = PropertyDataResult.Id
       // await this.setPropertyDetail(ListingData)
@@ -44,7 +44,7 @@ class SetListingData {
   }
 
   async setAgentOfficeData(ListingData: any) {
-    const ListingId = ListingData.Id
+    const ListingDataId = ListingData.ListingDataId
     try {
       const AgentOfficeResult = await this.agentOfficeDataRepository.save(
         ListingData
@@ -58,14 +58,14 @@ class SetListingData {
     } catch (error) {
       this.logger.error({
         message: 'SET_AgentOfficeResult_ERROR',
-        ListingId,
+        ListingDataId,
         error,
       })
     }
   }
 
   async setListingTransaction(ListingData: any) {
-    const ListingId = ListingData.Id
+    const ListingDataId = ListingData.ListingDataId
     try {
       const ListingTransactionResult =
         await this.listingTransactionRepository.save(ListingData)
@@ -78,14 +78,14 @@ class SetListingData {
     } catch (error) {
       this.logger.error({
         message: 'SET_ListingTransactionResult_ERROR',
-        ListingId,
+        ListingDataId,
         error,
       })
     }
   }
 
   async setLocationData(ListingData: any) {
-    const ListingId = ListingData.Id
+    const ListingDataId = ListingData.ListingDataId
     try {
       const LocationDataResult = await this.locationDataRepository.save(
         ListingData
@@ -99,14 +99,14 @@ class SetListingData {
     } catch (error) {
       this.logger.error({
         message: 'SET_LocationDataResult_ERROR',
-        ListingId,
+        ListingDataId,
         error,
       })
     }
   }
 
   async setPropertyData(ListingData: any) {
-    const ListingId = ListingData.Id
+    const ListingDataId = ListingData.ListingDataId
     try {
       const PropertyDataResult = await this.propertyDataRepository.save(
         ListingData
@@ -120,14 +120,14 @@ class SetListingData {
     } catch (error) {
       this.logger.error({
         message: 'SET_PropertyDataResult_ERROR',
-        ListingId,
+        ListingDataId,
         error,
       })
     }
   }
 
   async setPropertyDetail(ListingData: any) {
-    const ListingId = ListingData.Id
+    const ListingDataId = ListingData.ListingDataId
     try {
       const PropertyDetailResult = await this.propertyDetailRepository.save(
         ListingData
@@ -141,7 +141,7 @@ class SetListingData {
     } catch (error) {
       this.logger.error({
         message: 'SET_PropertyDetailResult_ERROR',
-        ListingId,
+        ListingDataId,
         error,
       })
     }
