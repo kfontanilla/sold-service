@@ -20,19 +20,29 @@ class SetListingData {
 
   async set(ImportConfigId: string, ListingData: any) {
     try {
-      const ListingDataResult = await this.listingDataRepository.save(
+      const ListingDataResult = await this.listingDataRepository.insertMany(
         ListingData
       )
-      // check data for error
-      ListingData.ListingDataId = ListingDataResult.Id
-      // use for saving to Agent Office Data, Listing
-      // await this.setAgentOfficeData(ListingData)
-      // await this.setListingTransaction(ListingData)
-      await this.setLocationData(ListingData)
-      const PropertyDataResult = await this.propertyDetailRepository.setPropertyData(ListingData)
-      // ListingData.PropertyDataId = PropertyDataResult.Id
-      // await this.setPropertyDetail(ListingData)
 
+      const processedListingData = await this.mappedListingDataId(
+        ListingDataResult,
+        ListingData
+      )
+
+      await this.agentOfficeDataRepository.setAgentOfficeData(
+        processedListingData
+      )
+      await this.listingTransactionRepository.setListingTransaction(
+        processedListingData
+      )
+      await this.locationDataRepository.setLocationData(processedListingData)
+      await this.propertyDataRepository.setPropertyData(processedListingData)
+
+      // this.logger.info({
+      //   message: 'SET_ListingDataResult_SUCCESS',
+      //   ImportConfigId,
+      //   processedListingData,
+      // })
       return ListingDataResult
     } catch (error) {
       this.logger.error({
@@ -41,6 +51,23 @@ class SetListingData {
         error,
       })
     }
+  }
+
+  /**
+   * Mapped the ListingDataId to the Raw ListingData from the Provider
+   * @param  {Array{}} ListingDataResult
+   * @param  {Array{}} ListingData
+   * 
+   * @returns {Object} Will return the mapped listing data id.
+   */
+  mappedListingDataId(ListingDataResult: any, ListingData: any): object {
+    return ListingData.map((item: any) => {
+      const found = ListingDataResult.find(
+        (row: any) => item.ListingKey === row.ListingKey
+      )
+      item.ListingDataId = found.Id
+      return item
+    })
   }
 }
 

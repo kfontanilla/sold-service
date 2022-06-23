@@ -7,7 +7,7 @@ class LocationDataRepository extends BaseRDSRepository {
 
   async setLocationData(ListingData: any) {
     try {
-      return await this.save(ListingData)
+      return await this.insertMany(ListingData)
     } catch (error) {
       throw error
     }

@@ -2,6 +2,7 @@ export interface ImportConfig {
     Id: Number,
     LegacyImportId: String,
     Name: String,
+    SearchQuery: String,
     ProviderType: String,
     ProviderUrl: Number,
     ProviderUsername: String,

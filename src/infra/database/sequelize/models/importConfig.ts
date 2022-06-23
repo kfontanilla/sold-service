@@ -21,6 +21,11 @@ module.exports = (sequelize: any, DataTypes: any) => {
         field: 'Name',
         allowNull: false,
       },
+      SearchQuery: {
+        type: DataTypes.STRING(255),
+        field: 'SearchQuery',
+        allowNull: false,
+      },
       ProviderType: {
         type: DataTypes.STRING(255),
         field: 'ProviderType',

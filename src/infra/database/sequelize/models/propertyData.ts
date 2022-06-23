@@ -42,12 +42,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       LotFeatures: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'LotFeatures',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('LotFeatures', value.toString())
-        },
       },
       LotSizeAcres: {
         type: DataTypes.DECIMAL(16, 2),
@@ -70,12 +67,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       AccessibilityFeatures: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'AccessibilityFeatures',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('AccessibilityFeatures', value.toString())
-        },
       },
       AttachedGarageYN: {
         type: DataTypes.CHAR(1),
@@ -83,12 +77,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       Basement: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'Basement',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('Basement', value.toString())
-        },
       },
       BasementYN: {
         type: DataTypes.CHAR(1),
@@ -136,20 +127,14 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       ConstructionMaterials: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'ConstructionMaterials',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('ConstructionMaterials', value.toString())
-        },
       },
       Cooling: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'Cooling',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('Cooling', value.toString())
-        },
       },
       CoolingYN: {
         type: DataTypes.CHAR(1),
@@ -157,28 +142,19 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       DoorFeatures: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'DoorFeatures',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('DoorFeatures', value.toString())
-        },
       },
       ExteriorFeatures: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'ExteriorFeatures',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('Cooling', value.toString())
-        },
       },
       FireplaceFeatures: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'FireplaceFeatures',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('FireplaceFeatures', value.toString())
-        },
       },
       FireplacesTotal: {
         type: DataTypes.TINYINT,
@@ -191,12 +167,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       Flooring: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'Flooring',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('Flooring', value.toString())
-        },
       },
       GarageSpaces: {
         type: DataTypes.TINYINT,
@@ -209,12 +182,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       Heating: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'Heating',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('Heating', value.toString())
-        },
       },
       HeatingYN: {
         type: DataTypes.CHAR(1),
@@ -222,12 +192,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       InteriorFeatures: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'InteriorFeatures',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('InteriorFeatures', value.toString())
-        },
       },
       NewConstructionYN: {
         type: DataTypes.CHAR(1),
@@ -245,12 +212,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       ParkingFeatures: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'ParkingFeatures',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('ParkingFeatures', value.toString())
-        },
       },
       ParkingTotal: {
         type: DataTypes.TINYINT,
@@ -263,44 +227,35 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       PropertyCondition: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'PropertyCondition',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('PropertyCondition', value.toString())
-        },
       },
       Roof: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'Roof',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('Roof', value.toString())
-        },
       },
       WindowFeatures: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'WindowFeatures',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('WindowFeatures', value.toString())
-        },
       },
       YearBuilt: {
-        type: DataTypes.DATEONLY,
+        type: DataTypes.INTEGER(4),
         field: 'YearBuilt',
         allowNull: true,
-        set(value: any){
+        set(value: any) {
+          if (parseInt(value)) {
             this.setDataValue('YearBuilt', parseInt(value))
+          }
+          this.setDataValue('YearBuilt', null)
         },
       },
       Rooms: {
         type: DataTypes.TEXT,
         field: 'Rooms',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('Rooms', value.toString())
-        },
       },
       RoomsTotal: {
         type: DataTypes.TINYINT,
@@ -308,12 +263,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       RoomType: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         field: 'RoomType',
         allowNull: true,
-        set(value: any){
-            this.setDataValue('RoomType', value.toString())
-        },
       },
     },
     {

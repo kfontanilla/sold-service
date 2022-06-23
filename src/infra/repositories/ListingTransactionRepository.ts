@@ -7,7 +7,7 @@ class ListingTransactionRepository extends BaseRDSRepository {
 
   async setListingTransaction(ListingData: any) {
     try {
-      return await this.save(ListingData)
+      return await this.insertMany(ListingData)
     } catch (error) {
       throw error
     }

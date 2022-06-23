@@ -32,7 +32,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       UnitNumber: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING(10),
         field: 'UnitNumber',
         allowNull: true,
       },
