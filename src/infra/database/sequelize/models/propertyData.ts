@@ -245,12 +245,11 @@ module.exports = (sequelize: any, DataTypes: any) => {
         type: DataTypes.INTEGER(4),
         field: 'YearBuilt',
         allowNull: true,
-        set(value: any){
-            if(parseInt(value)){
-              this.setDataValue('YearBuilt', parseInt(value))
-            } else {
-              this.setDataValue('YearBuilt', null)
-            }
+        set(value: any) {
+          if (parseInt(value)) {
+            this.setDataValue('YearBuilt', parseInt(value))
+          }
+          this.setDataValue('YearBuilt', null)
         },
       },
       Rooms: {
