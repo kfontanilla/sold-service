@@ -35,7 +35,8 @@ class BridgeClient {
           '?access_token=' +
           ImportConfig.ProviderPassword +
           '&$filter=' +
-          encodeURI(ImportConfig.SearchQuery)
+          encodeURI(ImportConfig.SearchQuery) +
+          '&$top=' + ImportConfig.RequestLimit
         )
       }
       
