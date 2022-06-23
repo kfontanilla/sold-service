@@ -56,13 +56,14 @@ class SetListingData {
   /**
    * Mapped the ListingDataId to the Raw ListingData from the Provider
    * @param  {Array{}} ListingDataResult
-   * @param  {Object} ListingData
-   * @returns @return {Array{}} Will return the mapped listing data id.
+   * @param  {Array{}} ListingData
+   * 
+   * @returns {Object} Will return the mapped listing data id.
    */
-  async mappedListingDataId(ListingDataResult: any, ListingData: any) {
+  mappedListingDataId(ListingDataResult: any, ListingData: any): object {
     return ListingData.map((item: any) => {
       const found = ListingDataResult.find(
-        (row: any) => item.ListingKey == row.ListingKey
+        (row: any) => item.ListingKey === row.ListingKey
       )
       item.ListingDataId = found.Id
       return item

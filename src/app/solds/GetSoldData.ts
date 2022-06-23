@@ -53,8 +53,7 @@ class GetSoldData {
 
   async processData(result: any) {
     const { importData, soldData } = result
-    let preProcessedData = []
-    console.time()
+    const preProcessedData = []
     for (const key in soldData.value) {
       const listingData = soldData.value[key]
       listingData.ImportConfigId = importData.Id
