@@ -23,16 +23,24 @@ class GetSoldData {
     try {
       const importData = await this.getImportConfig.get(LegacyImportId)
       //base on providerType - call the appropriate Interface
-
-      // call bridge client interface to extract data from provider
-      const soldData = await this.bridgeClient.getSolds(importData)
-      // iterate over soldData
-      const processedData = await this.processData({
-        importData: importData,
-        soldData: soldData,
-      })
-
-      return this.responseFormatter.success(response, processedData)
+      let queryUrl = this.bridgeClient.buildQueryUrl(importData)
+      importData.nextLink = queryUrl
+      // call provider interface to extract data from provider
+      do {
+        const soldData = await this.bridgeClient.getSolds(importData)
+        queryUrl = soldData['@odata.nextLink']
+        importData.nextLink = queryUrl
+        // iterate over soldData
+        // const processedData = await this.processData({
+        //   importData: importData,
+        //   soldData: soldData,
+        // })
+        // Delay the next call? 
+        
+      } while (queryUrl)
+      
+      return true
+      // return this.responseFormatter.success(response, processedData)
     } catch (error: any) {
       this.logger.error({
         message:

@@ -8,13 +8,14 @@ class BridgeClient {
   // get sold by LegacyImportId
   async getSolds(importConfig: any) {
     try {
-      const queryUrl = this.buildQueryUrl(importConfig)
+      const queryUrl = importConfig.nextLink
 
       const options = {
         headers: {
           'Accept-Encoding': 'gzip, deflate, br',
         },
       }
+
       const { data } = await this.httpClient.get(queryUrl, options)
 
       return data
