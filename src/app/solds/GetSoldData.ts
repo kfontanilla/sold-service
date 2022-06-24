@@ -25,20 +25,28 @@ class GetSoldData {
       //base on providerType - call the appropriate Interface
       let queryUrl = this.bridgeClient.buildQueryUrl(importData)
       importData.nextLink = queryUrl
+      let currentImportCount = 0
+      const MAX_RECORD = 10000
       // call provider interface to extract data from provider
       do {
         const soldData = await this.bridgeClient.getSolds(importData)
+        // use sort and last modified store it on service_stat.ServiceDetails
         queryUrl = soldData['@odata.nextLink']
         importData.nextLink = queryUrl
+        currentImportCount += soldData.value.length
+
+        this.logger.info({
+          message: 'GE_SOLD_DATA_COUNTER',
+          currentImportCount,
+        })
         // iterate over soldData
-        // const processedData = await this.processData({
-        //   importData: importData,
-        //   soldData: soldData,
-        // })
-        // Delay the next call? 
-        
-      } while (queryUrl)
-      
+        const processedData = await this.processData({
+          importData: importData,
+          soldData: soldData,
+        })
+        // Delay the next call?
+      } while (currentImportCount <= MAX_RECORD)
+
       return true
       // return this.responseFormatter.success(response, processedData)
     } catch (error: any) {

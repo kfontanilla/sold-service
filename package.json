@@ -6,7 +6,8 @@
   "scripts": {
     "migrate": "tsc config/database.ts && npm run start:migration",
     "start:migration": "npx sequelize db:migrate",
-    "start": "cross-env NODE_PATH=. NODE_ENV=local nodemon --watch './**/*.ts' --exec 'ts-node' src/server.ts"
+    "start": "cross-env NODE_PATH=. NODE_ENV=local nodemon --watch './**/*.ts' --exec 'ts-node' src/server.ts",
+    "start-internal": "cross-env NODE_PATH=. NODE_ENV=internal nodemon --watch './**/*.ts' --exec 'ts-node' src/server.ts"
   },
   "author": "",
   "license": "ISC",

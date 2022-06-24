@@ -13,6 +13,20 @@ const config = {
     },
     dialect: 'mysql',
   },
+  internal: {
+    username: 'sold_service',
+    password: 'kLMk3za2Y8c4',
+    database: 'property_resources',
+    replication: {
+      read: {
+        host: 'etlresources.pl-internal.net',
+      },
+      write: {
+        host: 'etlresources.pl-internal.net',
+      },
+    },
+    dialect: 'mysql',
+  },
 }
 
 module.exports = config

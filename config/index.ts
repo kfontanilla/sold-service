@@ -2,7 +2,8 @@ require('dotenv').config()
 const fs = require('fs');
 const path = require('path');
 
-const ENV = 'local';
+
+const ENV = process.env['NODE_ENV'] === 'internal' ? 'internal' : 'local';
 const dbConfig = path.join(__dirname, '/database.ts');
 
 function loadDbConfig() {
