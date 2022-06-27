@@ -37,6 +37,7 @@ class BridgeClient {
           ImportConfig.ProviderPassword +
           '&$filter=' +
           encodeURI(ImportConfig.SearchQuery) +
+          '&$orderby=ModificationTimestamp DESC' +
           '&$top=' + ImportConfig.RequestLimit
         )
       }
