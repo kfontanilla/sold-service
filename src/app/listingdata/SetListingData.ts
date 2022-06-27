@@ -45,6 +45,7 @@ class SetListingData {
       // })
       return ListingDataResult
     } catch (error: any) {
+      
       const errMessage = error.name 
       this.logger.error({
         message: 'SET_ListingDataResult_ERROR',

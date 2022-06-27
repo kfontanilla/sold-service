@@ -55,8 +55,11 @@ class GetSoldData {
       do {
    
         let soldData = await this.bridgeClient.getSolds(importData)
-        queryUrl = soldData['@odata.nextLink']
+    
+        await this.delay()
+
         finished = typeof queryUrl === 'undefined'
+        queryUrl = soldData['@odata.nextLink']
         importData.nextLink = queryUrl
         currentImportCount += soldData.value.length
 
@@ -71,7 +74,7 @@ class GetSoldData {
           soldData: soldData,
         })
 
-        await this.delay()
+
       } while (!finished) 
 
       if (finished){
@@ -100,10 +103,11 @@ class GetSoldData {
   }
 
   async delay() {
-    const period = 500
+    const period = 1500
     if (period > 0) {
       return new Promise((resolve) => {
         setTimeout(() => {
+          console.log('delay next call')
           resolve(period)
         }, period)
       })
