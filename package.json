@@ -6,7 +6,11 @@
   "scripts": {
     "migrate": "tsc config/database.ts && npm run start:migration",
     "start:migration": "npx sequelize db:migrate",
-    "start": "cross-env NODE_PATH=. NODE_ENV=local nodemon --watch './**/*.ts' --exec 'ts-node' src/server.ts"
+    "local": "cross-env NODE_PATH=. NODE_ENV=local nodemon --watch './**/*.ts' --exec 'ts-node' src/server.ts",
+    "build:local": "cross-env NODE_PATH=. NODE_ENV=local ./pipeline/scripts/build.sh",
+    "build:develop": "cross-env NODE_PATH=. NODE_ENV=develop ./pipeline/scripts/build.sh",
+    "build:staging": "cross-env NODE_PATH=. NODE_ENV=staging ./pipeline/scripts/build.sh",
+    "build:production": "cross-env NODE_PATH=. NODE_ENV=production ./pipeline/scripts/build.sh"
   },
   "author": "",
   "license": "ISC",
