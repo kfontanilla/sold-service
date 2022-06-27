@@ -36,8 +36,9 @@ class GetSoldData {
         currentImportCount += soldData.value.length
 
         this.logger.info({
-          message: 'GE_SOLD_DATA_COUNTER',
+          message: 'GET_SOLD_DATA_COUNTER',
           currentImportCount,
+          queryUrl
         })
         // iterate over soldData
         const processedData = await this.processData({
@@ -45,7 +46,7 @@ class GetSoldData {
           soldData: soldData,
         })
         // Delay the next call?
-      } while (currentImportCount <= MAX_RECORD)
+      } while (queryUrl)
 
       return true
       // return this.responseFormatter.success(response, processedData)
