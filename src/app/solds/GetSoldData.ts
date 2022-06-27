@@ -23,48 +23,67 @@ class GetSoldData {
     try {
       const importData = await this.getImportConfig.get(LegacyImportId)
       //base on providerType - call the appropriate Interface
-      let queryUrl = this.bridgeClient.buildQueryUrl(importData)
-      importData.nextLink = queryUrl
-      let currentImportCount = 0
-      const MAX_RECORD = 10000
-      // call provider interface to extract data from provider
-      do {
-        const soldData = await this.bridgeClient.getSolds(importData)
-        // use sort and last modified store it on service_stat.ServiceDetails
-        queryUrl = soldData['@odata.nextLink']
-        importData.nextLink = queryUrl
-        currentImportCount += soldData.value.length
+      importData.nextLink = this.bridgeClient.buildQueryUrl(importData)
+      const result = await this.apiCall(importData)
 
-        this.logger.info({
-          message: 'GET_SOLD_DATA_COUNTER',
-          currentImportCount,
-          queryUrl
-        })
-        // iterate over soldData
-        const processedData = await this.processData({
-          importData: importData,
-          soldData: soldData,
-        })
-        // Delay the next call?
-      } while (queryUrl)
 
-      return true
-      // return this.responseFormatter.success(response, processedData)
+      return this.responseFormatter.success(response, result)
     } catch (error: any) {
+      const { message } = error
+
       this.logger.error({
         message:
-          'EXTRACT_SOLD_DATA_ERROR: Error while fetching sold data from data provider',
+          'GET_SOLD_DATA_ERROR: Error while fetching sold data from data provider',
         LegacyImportId,
         error,
       })
-
-      const { message } = error
 
       if (message === INVALID_PATH_PARAMETER_ERROR) {
         return this.responseFormatter.badRequest(response)
       }
 
       return this.responseFormatter.internalServerError(response)
+    }
+  }
+
+  async apiCall(importData: any) {
+    try {
+      let currentImportCount = 0
+      let finished = false
+      let queryUrl = ''
+      // call provider interface to extract data from provider
+      do {
+   
+        let soldData = await this.bridgeClient.getSolds(importData)
+        queryUrl = soldData['@odata.nextLink']
+        finished = typeof queryUrl === 'undefined'
+        importData.nextLink = queryUrl
+        currentImportCount += soldData.value.length
+
+        this.logger.info({
+          message: 'GET_SOLD_DATA_COUNTER',
+          currentImportCount,
+          finished,
+        })
+        // iterate over soldData
+        const processedData = await this.processData({
+          importData: importData,
+          soldData: soldData,
+        })
+
+        await this.delay()
+      } while (!finished) 
+
+      if (finished){
+        return true
+      }
+
+    } catch (error) {
+      this.logger.error({
+        message:
+          'API_CALL_SOLD_DATA_ERROR: Error while fetching sold data from data provider',
+        // error,
+      })
     }
   }
 
@@ -78,6 +97,18 @@ class GetSoldData {
       preProcessedData.push(listingData)
     }
     await this.setListingData.set(importData.Id, preProcessedData)
+  }
+
+  async delay() {
+    const period = 500
+    if (period > 0) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(period)
+        }, period)
+      })
+    }
+    return Promise.resolve(0)
   }
 }
 

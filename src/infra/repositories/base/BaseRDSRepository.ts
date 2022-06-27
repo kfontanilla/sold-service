@@ -54,6 +54,13 @@ export class BaseRDSRepository {
    * @return {Promise<object|null>} Will return the query result.
    */
    async insertMany(dataSet: object[]): Promise<object|null> {
-    return this.model.bulkCreate(dataSet);
+    try {
+
+      return this.model.bulkCreate(dataSet)
+      
+    } catch (error) {
+      throw error
+    }
+   
   }
 }

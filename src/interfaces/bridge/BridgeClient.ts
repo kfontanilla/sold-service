@@ -26,9 +26,11 @@ class BridgeClient {
 
   buildQueryUrl(ImportConfig: any) {
     try {
+      if (ImportConfig.AdditionalConfig.sold) {
+        const addedResource = ImportConfig.AdditionalConfig.sold.addedResource
+          ? '/' + ImportConfig.AdditionalConfig.sold.addedResource
+          : ''
 
-      if(ImportConfig.AdditionalConfig.sold){
-        const addedResource = ( ImportConfig.AdditionalConfig.sold.addedResource ? '/' + ImportConfig.AdditionalConfig.sold.addedResource : '' )
         return (
           ImportConfig.ProviderUrl +
           ImportConfig.AdditionalConfig.sold.type +
@@ -37,11 +39,10 @@ class BridgeClient {
           ImportConfig.ProviderPassword +
           '&$filter=' +
           encodeURI(ImportConfig.SearchQuery) +
-          '&$orderby=ModificationTimestamp DESC' +
-          '&$top=' + ImportConfig.RequestLimit
+          '&$top=' +
+          ImportConfig.RequestLimit
         )
       }
-      
     } catch (error) {
       throw error
     }
