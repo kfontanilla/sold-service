@@ -1,31 +1,25 @@
+const {
+  NODE_ENV: environment = "local",
+  RDS_DATABASE_USERNAME: username,
+  RDS_DATABASE_PASSWORD: password,
+  RDS_DATABASE_NAME: database,
+  RDS_DATABASE_HOST: host,
+} = process.env
+
 const config = {
-  local: {
-    username: 'root',
-    password: 'admin',
-    database: 'placester',
+  [environment]: {
+    username,
+    password,
+    database,
     replication: {
       read: {
-        host: '127.0.0.1',
+        host,
       },
       write: {
-        host: '127.0.0.1',
+        host,
       },
     },
-    dialect: 'mysql',
-  },
-  internal: {
-    username: 'sold_service',
-    password: 'kLMk3za2Y8c4',
-    database: 'property_resources',
-    replication: {
-      read: {
-        host: 'etlresources.pl-internal.net',
-      },
-      write: {
-        host: 'etlresources.pl-internal.net',
-      },
-    },
-    dialect: 'mysql',
+    dialect: "mysql",
   },
 }
 
