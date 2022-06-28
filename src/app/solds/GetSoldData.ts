@@ -8,7 +8,7 @@ class GetSoldData {
     GetImportConfig,
     SetListingData,
     logger,
-    serviceStatRepository
+    serviceStatRepository,
   }: any) {
     this.bridgeClient = bridgeClient
     this.responseFormatter = responseFormatter
@@ -26,11 +26,13 @@ class GetSoldData {
       const importData = await this.getImportConfig.get(LegacyImportId)
       // Base on providerType - call the appropriate Interface
       importData.nextLink = this.bridgeClient.buildQueryUrl(importData)
+  
       const serviceStats = await this.updateServiceStat(importData)
-      // Show current status of sold service run 
+      importData.AvailableListingCount = serviceStats.AvailableListingCount
+      // display current status of sold service run
       this.responseFormatter.success(response, serviceStats)
       const result = await this.apiCall(importData)
-
+      
     } catch (error: any) {
       const { message } = error
 
@@ -56,15 +58,26 @@ class GetSoldData {
       let queryUrl = ''
       // call provider interface to extract data from provider
       do {
-   
         let soldData = await this.bridgeClient.getSolds(importData)
-    
+        // delay base on provider
         await this.delay()
         queryUrl = soldData['@odata.nextLink']
+        currentImportCount += soldData.value.length
+
+        importData.serviceDetail = {
+          ImportConfigId: importData.Id,
+          AvailableListingCount: importData.AvailableListingCount,
+          ImportedListingCount: currentImportCount,
+          ImageDownLoaded: 0,
+          ServiceDetails: {
+            startLink: importData.nextLink,
+            nextLink: queryUrl,
+          },
+        }
+        await this.updateServiceStat(importData)
 
         finished = typeof queryUrl === 'undefined'
-        importData.nextLink = queryUrl
-        currentImportCount += soldData.value.length
+        importData.nextLink = (!finished) ? queryUrl : importData.nextLink
 
         this.logger.info({
           message: 'GET_SOLD_DATA_COUNTER',
@@ -77,15 +90,31 @@ class GetSoldData {
           soldData: soldData,
         })
 
+      } while (!finished)
 
-      } while (!finished) 
-
-      if (finished){
+      if (finished) {
         // update service stats
+        importData.serviceDetail = {
+          ImportConfigId: importData.Id,
+          AvailableListingCount: importData.AvailableListingCount,
+          ImportedListingCount: currentImportCount,
+          ImageDownLoaded: 0,
+          LastSuccessfulRun: new Date(),
+          ServiceDetails: {
+            nextLink: importData.nextLink,
+          },
+        }
+
+        await this.updateServiceStat(importData)
+
+        this.logger.info({
+          message: 'GET_SOLD_DATA_DONE',
+          currentImportCount,
+          finished,
+        })
 
         return true
       }
-
     } catch (error) {
       this.logger.error({
         message:
@@ -109,29 +138,32 @@ class GetSoldData {
 
   async updateServiceStat(importData: any) {
     try {
-      const serviceStats = await this.bridgeClient.getSolds(importData)
-      await this.delay()
-      const serviceDetail = {
-        ImportConfigId : importData.Id,
-        AvailableListingCount : serviceStats['@odata.count'],
-        ImageDownLoaded: 0,
-        ServiceDetails: {
-          startLink: importData.nextLink, 
-          nextLink: serviceStats['@odata.nextLink']
+      let serviceDetail = importData.serviceDetail
+      if (typeof importData.serviceDetail === 'undefined') {
+        const serviceStats = await this.bridgeClient.getSolds(importData)
+        await this.delay()
+        serviceDetail = {
+          ImportConfigId: importData.Id,
+          AvailableListingCount: serviceStats['@odata.count'],
+          ImageDownLoaded: 0,
+          ServiceDetails: {
+            startLink: importData.nextLink,
+            nextLink: serviceStats['@odata.nextLink'],
+          },
         }
       }
+
       await this.serviceStatRepository.setServiceStat(serviceDetail)
-  
+
       return serviceDetail
-    } catch (error: any){
-      const errMessage = error.name 
+    } catch (error: any) {
+      const errMessage = error.name
       this.logger.error({
         message: 'updateServiceStat_ERROR',
         importData,
         errMessage,
       })
     }
-  
   }
 
   async delay() {
