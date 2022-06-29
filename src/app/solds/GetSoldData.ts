@@ -1,3 +1,6 @@
+import { ImportConfig } from '../../domain/ImportConfig'
+import { ServiceDetail } from '../../domain/ServiceDetail'
+
 const { INVALID_PATH_PARAMETER_ERROR } = require('src/domain/Errors')
 
 class GetSoldData {
@@ -26,13 +29,13 @@ class GetSoldData {
       const importData = await this.getImportConfig.get(LegacyImportId)
       // Base on providerType - call the appropriate Interface
       importData.nextLink = this.bridgeClient.buildQueryUrl(importData)
-  
+
       const serviceStats = await this.updateServiceStat(importData)
       importData.AvailableListingCount = serviceStats.AvailableListingCount
+      // process data
+      this.apiCall(importData)
       // display current status of sold service run
-      this.responseFormatter.success(response, serviceStats)
-      const result = await this.apiCall(importData)
-      
+      return this.responseFormatter.success(response, serviceStats)
     } catch (error: any) {
       const { message } = error
 
@@ -51,7 +54,15 @@ class GetSoldData {
     }
   }
 
-  async apiCall(importData: any) {
+  /**
+   * Api call to provider then traversing all the data
+   *
+   * @param  {ImportConfig} importData
+   *
+   * @returns no returns
+   */
+
+  async apiCall(importData: ImportConfig) {
     try {
       let currentImportCount = 0
       let finished = false
@@ -77,7 +88,7 @@ class GetSoldData {
         await this.updateServiceStat(importData)
 
         finished = typeof queryUrl === 'undefined'
-        importData.nextLink = (!finished) ? queryUrl : importData.nextLink
+        importData.nextLink = !finished ? queryUrl : importData.nextLink
 
         this.logger.info({
           message: 'GET_SOLD_DATA_COUNTER',
@@ -89,7 +100,6 @@ class GetSoldData {
           importData: importData,
           soldData: soldData,
         })
-
       } while (!finished)
 
       if (finished) {
@@ -112,8 +122,6 @@ class GetSoldData {
           currentImportCount,
           finished,
         })
-
-        return true
       }
     } catch (error) {
       this.logger.error({
@@ -136,9 +144,19 @@ class GetSoldData {
     await this.setListingData.set(importData.Id, preProcessedData)
   }
 
-  async updateServiceStat(importData: any) {
+  /**
+   * Update service stats on every run
+   *
+   * @param  {ImportConfig} importData
+   *
+   * @returns {ServiceDetail} serviceDetail
+   */
+
+  async updateServiceStat(importData: ImportConfig): Promise<ServiceDetail> {
+
+    let serviceDetail = importData.serviceDetail
+
     try {
-      let serviceDetail = importData.serviceDetail
       if (typeof importData.serviceDetail === 'undefined') {
         const serviceStats = await this.bridgeClient.getSolds(importData)
         await this.delay()
@@ -155,7 +173,7 @@ class GetSoldData {
 
       await this.serviceStatRepository.setServiceStat(serviceDetail)
 
-      return serviceDetail
+    
     } catch (error: any) {
       const errMessage = error.name
       this.logger.error({
@@ -164,6 +182,8 @@ class GetSoldData {
         errMessage,
       })
     }
+
+    return serviceDetail
   }
 
   async delay() {
