@@ -44,11 +44,13 @@ class SetListingData {
       //   processedListingData,
       // })
       return ListingDataResult
-    } catch (error) {
+    } catch (error: any) {
+      
+      const errMessage = error.name 
       this.logger.error({
         message: 'SET_ListingDataResult_ERROR',
         ImportConfigId,
-        error,
+        errMessage,
       })
     }
   }
