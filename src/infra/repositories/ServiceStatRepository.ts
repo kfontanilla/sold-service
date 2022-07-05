@@ -1,3 +1,4 @@
+import { ServiceDetail } from '../../domain/ServiceDetail';
 import { BaseRDSRepository } from './base/BaseRDSRepository'
 
 class ServiceStatRepository extends BaseRDSRepository {
@@ -5,9 +6,9 @@ class ServiceStatRepository extends BaseRDSRepository {
     super(ServiceStatModel)
   }
   
-  async setServiceStat(ListingData: any) {
+  async setServiceStat(ServiceDetail: ServiceDetail) {
     try {
-      return await this.save(ListingData)
+      return await this.save(ServiceDetail)
     } catch (error) {
       throw error;
     }
