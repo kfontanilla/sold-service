@@ -1,16 +1,19 @@
-const { Router } = require('express');
-import container from '../../../container';
+const { Router } = require('express')
+import container from '../../../container'
 
 const routes = () => {
   // Initialize router
-  const router = new Router();
+  const router = new Router()
 
-  router.get('/users', (...args: any) => container.resolve('GetUsers').execute(...args));
-  router.get('/users/:id', (...args: any) => container.resolve('GetUser').execute(...args));
-  router.delete('/users/:id', (...args: any) => container.resolve('DeleteUser').execute(...args));
+  router.get('/solds/:LegacyImportId', (...args: any) =>
+    container.resolve('GetSoldData').execute(...args)
+  )
 
+  router.get('/importconfig/:LegacyImportId', (...args: any) =>
+    container.resolve('GetImportConfig').execute(...args)
+  )
   // Show available endpoints in the terminal
-  return router;
-};
+  return router
+}
 
-module.exports = routes;
+module.exports = routes

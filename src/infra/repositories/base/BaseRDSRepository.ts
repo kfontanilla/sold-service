@@ -1,9 +1,7 @@
 export class BaseRDSRepository {
   model: any
-  domain: any
-  constructor(model: any, domain: any) {
+  constructor(model: any) {
     this.model = model
-    this.domain = domain
   }
 
   /**
@@ -37,5 +35,32 @@ export class BaseRDSRepository {
    */
   async getById(id: number): Promise<object | null> {
     return this.getOne({ where: { id } })
+  }
+
+  async save(doc: any) {
+    try {
+      const saveData = await this.model.create(doc)
+
+      return saveData
+    } catch (error) {
+      throw error
+    }
+  }
+
+  /**
+   * Insert many data into table
+   * @param {object[]} dataSet The data set that will be inserted to table
+   * 
+   * @return {Promise<object|null>} Will return the query result.
+   */
+   async insertMany(dataSet: object[]): Promise<object|null> {
+    try {
+
+      return this.model.bulkCreate(dataSet)
+      
+    } catch (error) {
+      throw error
+    }
+   
   }
 }

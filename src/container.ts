@@ -1,28 +1,49 @@
-const { createContainer } = require('awilix');
-const configs = require('../config');
-const { database, models } = require('./infra/database/sequelize/models');
-const usersOperations = require('src/app/users');
-const jsonPlaceHolderClient = require('src/interfaces/json-place-holder');
-import http from './infra/http';
-import mongoClient from './infra/database/mongo/mongoClient';
-import repositories from './infra/repositories';
+const { createContainer, Lifetime } = require('awilix')
+const configs = require('../config')
+const { database, models } = require('./infra/database/sequelize/models')
+const soldsOperations = require('src/app/solds')
+const importConfigOperations = require('src/app/importconfigs')
+const listingDataOperations = require('src/app/listingdata')
 
-const container = createContainer();
+const jsonPlaceHolderClient = require('src/interfaces/json-place-holder')
+const mlsGridClient = require('src/interfaces/mls-grid')
+const bridgeClient = require('src/interfaces/bridge')
+import http from './infra/http'
+import { logger } from './infra/logger/logger'
+import utilOperations from './utils'
+import mongoClient from './infra/database/mongo/mongoClient'
+import repositories from './infra/repositories'
 
-container.registerValue({ configs });
+const container = createContainer()
+
+container
+  .registerFunction({
+    logger: [logger, { lifetime: Lifetime.SINGLETON }],
+  })
+  .registerValue({ configs })
 
 // NoSQL
-container.registerClass(mongoClient);
+// container.registerClass(mongoClient);
 
 // RDS
-container.registerValue(models);
-container.registerValue({ database });
+container.registerValue(models)
+container.registerValue({ database })
 
 // HTTP
-container.registerClass(http);
+container.registerClass(http)
 
-container.registerClass(repositories);
-container.registerClass(usersOperations);
-container.registerClass(jsonPlaceHolderClient);
+// UTILS
+container.registerClass(utilOperations)
 
-export default container;
+container.registerClass(repositories)
+
+// Operation
+container.registerClass(soldsOperations)
+container.registerClass(importConfigOperations)
+container.registerClass(listingDataOperations)
+
+container.registerClass(jsonPlaceHolderClient)
+container.registerClass(mlsGridClient)
+container.registerClass(bridgeClient)
+
+export default container

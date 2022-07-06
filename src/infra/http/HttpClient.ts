@@ -1,10 +1,13 @@
 import axios from 'axios'
 
 class HttpClient {
-  constructor() {}
+  [property: string]: any
+  constructor({ logger, }: any) {
+    this.logger = logger
+  }
 
   async get(url: string, options: object): Promise<any> {
-    console.log({
+    this.logger.info({
       message: 'Sending GET Request',
       url,
       ...options,
@@ -18,7 +21,7 @@ class HttpClient {
   }
 
   async post(url: string, options: object): Promise<any> {
-    console.log({
+    this.logger.info({
       message: 'Sending POST Request',
       url,
       ...options,
