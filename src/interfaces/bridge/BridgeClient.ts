@@ -1,3 +1,5 @@
+import { ImportConfig } from "../../domain/ImportConfig"
+
 class BridgeClient {
   private readonly httpClient: any
 
@@ -6,7 +8,7 @@ class BridgeClient {
   }
 
   // get sold by LegacyImportId
-  async getSolds(importConfig: any) {
+  async getSolds(importConfig: ImportConfig) {
     try {
       const queryUrl = importConfig.nextLink
 
@@ -24,7 +26,7 @@ class BridgeClient {
     }
   }
 
-  buildQueryUrl(ImportConfig: any) {
+  buildQueryUrl(ImportConfig: ImportConfig) {
     try {
       if (ImportConfig.AdditionalConfig.sold) {
         const addedResource = ImportConfig.AdditionalConfig.sold.addedResource

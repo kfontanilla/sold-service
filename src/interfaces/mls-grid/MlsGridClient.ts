@@ -1,32 +1,48 @@
-const {
-  MLS_GRID_PROTOCOL: protocol,
-  MLS_GRID_HOSTNAME: hostname,
-  MLS_GRID_AUTHORIZATION: authorization,
-} = process.env
+import { ImportConfig } from "../../domain/ImportConfig"
 
 class MlsGridClient {
-  private readonly basePath = `${protocol}://${hostname}`
   private readonly httpClient: any
 
   constructor({ httpClient }: any) {
     this.httpClient = httpClient
   }
 
-  async getSolds() {
+  // get sold by LegacyImportId
+  async getSolds(importConfig: ImportConfig) {
     try {
+      const queryUrl = importConfig.nextLink
+      const authorization = importConfig.password
       const options = {
         headers: {
-          Authorization: authorization,
           'Accept-Encoding': 'gzip, deflate, br',
         },
       }
 
-      const { data } = await this.httpClient.get(
-        `${this.basePath}/Property?$filter=OriginatingSystemName eq 'mfrmls' and StandardStatus eq 'Closed'&$top=50&$count=true&$select=MlsStatus`,
-        options
-      )
+      const { data } = await this.httpClient.get(queryUrl, options)
 
       return data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  buildQueryUrl(ImportConfig: ImportConfig) {
+    try {
+      if (ImportConfig.AdditionalConfig.sold) {
+        const addedResource = ImportConfig.AdditionalConfig.sold.addedResource
+          ? '/' + ImportConfig.AdditionalConfig.sold.addedResource
+          : ''
+
+        return (
+          ImportConfig.ProviderUrl +
+          ImportConfig.AdditionalConfig.sold.type +
+          addedResource +
+          '&$filter=' +
+          encodeURI(ImportConfig.SearchQuery) +
+          '&$top=' +
+          ImportConfig.RequestLimit
+        )
+      }
     } catch (error) {
       throw error
     }
