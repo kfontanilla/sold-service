@@ -14,6 +14,7 @@ class MlsGridClient {
       const authorization = importConfig.ProviderPassword
       const options = {
         headers: {
+          'Authorization' : authorization,
           'Accept-Encoding': 'gzip, deflate, br',
         },
       }
@@ -29,11 +30,13 @@ class MlsGridClient {
   buildQueryUrl(ImportConfig: ImportConfig) {
     try {
       if (ImportConfig.AdditionalConfig.sold) {
+        const filterQuery = 'MlgCanView eq true and ' + ImportConfig.SearchQuery
+
         return (
           ImportConfig.ProviderUrl +
           ImportConfig.AdditionalConfig.sold.type +
           '?$count=true&$filter=' +
-          encodeURI(ImportConfig.SearchQuery) +
+          encodeURI(filterQuery) +
           '&$top=' +
           ImportConfig.RequestLimit
         )
