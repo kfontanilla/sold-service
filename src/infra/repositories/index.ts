@@ -3,10 +3,15 @@ const { Lifetime } = require('awilix')
 
 const repositories: any = {}
 
+let fileExtension = '.ts'
+if (fs.existsSync(`${__dirname}/index.js`)) {
+  fileExtension = '.js'
+}
+
 fs.readdirSync('src/infra/repositories')
   .filter((file: any) => {
     return (
-      file.indexOf('.') !== 0 && file !== 'index.ts' && file.slice(-3) === '.ts'
+      file.indexOf('.') !== 0 && file !== `index${fileExtension}` && file.slice(-3) === fileExtension
     )
   })
   .forEach((file: any) => {

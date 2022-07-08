@@ -9,14 +9,19 @@ const singularizeToUpper = (str: string) => {
 };
 
 module.exports = {
-  load({ sequelize, baseFolder, indexFile = 'index.ts' }: any) {
+  load({ sequelize, baseFolder }: any) {
     const loaded: any = {
       models: {},
     };
 
+    let fileExtension = '.ts'
+    if (fs.existsSync(`${__dirname}/ModelsLoader.js`)) {
+      fileExtension = '.js'
+    }
+
     fs.readdirSync(baseFolder)
       .filter((file: any) => {
-        return file.indexOf('.') !== 0 && file !== indexFile && file.slice(-3) === '.ts';
+        return file.indexOf('.') !== 0 && file !== `index${fileExtension}` && file.slice(-3) === fileExtension;
       })
       .forEach((file: any) => {
         const model = require(path.join(baseFolder, file));
