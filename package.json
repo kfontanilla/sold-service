@@ -7,7 +7,7 @@
     "migrate": "tsc config/database.ts && npm run start:migration",
     "start:migration": "npx sequelize db:migrate",
     "local": "cross-env NODE_PATH=. NODE_ENV=local nodemon --watch './**/*.ts' --exec 'ts-node' src/server.ts",
-    "pm2": "cross-env NODE_PATH=. NODE_ENV=production pm2 start ./src/server.js --watch -i max",
+    "pm2-non-local": "cross-env NODE_PATH=. NODE_ENV=production pm2 start ./src/server.js --watch -i max",
     "build:local": "cross-env NODE_PATH=. NODE_ENV=local ./pipeline/scripts/build.sh",
     "build:develop": "cross-env NODE_PATH=. NODE_ENV=develop ./pipeline/scripts/build.sh",
     "build:staging": "cross-env NODE_PATH=. NODE_ENV=staging ./pipeline/scripts/build.sh",
