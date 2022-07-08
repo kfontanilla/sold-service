@@ -74,6 +74,32 @@ npm run local
     ├── package.json            # Node Dependencies and Script list
     └── README.md
 
+# Deployment
+1. Connect to Placester VPN
+2. Open Terminal
+3. Connect to specific environment ec2 instance via ssh
+```bash
+// Sample for develop environment
+ssh <username>@sold1.va.pl-internal.net
+```
+4. Login to ssh 
+```bash
+sudo su -
+```
+5. Change directory to sold-service
+```bash
+cd sold-service
+```
+6. Git pull environment branch that needs to be deployed
+```bash
+git pull origin <BRANCH_NAME>
+```
+7. Compile Typescript code
+```bash
+// Environment is develop or staging or production
+npm run build:<Environment>
+```
+8. Test if changes has been reflected by using the ec2 domain as host name
 # Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
