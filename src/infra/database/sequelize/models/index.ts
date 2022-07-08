@@ -1,6 +1,6 @@
 const ModelsLoader = require('src/infra/database/sequelize/ModelsLoader')
 const Sequelize = require('sequelize')
-const configuration = require('config').db
+const configuration = require('src/config').db
 
 if (configuration) {
   const sequelize = new Sequelize({
