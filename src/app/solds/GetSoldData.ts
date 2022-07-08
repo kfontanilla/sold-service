@@ -28,6 +28,7 @@ class GetSoldData {
     try {
       const importData = await this.getImportConfig.get(LegacyImportId)
       // Base on providerType - call the appropriate Interface
+      // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
       importData.nextLink = this.bridgeClient.buildQueryUrl(importData)
 
       const serviceStats = await this.updateServiceStat(importData)
@@ -67,12 +68,14 @@ class GetSoldData {
       let currentImportCount = 0
       let finished = false
       let queryUrl = ''
+      let modificationTimestamp = ''
       // call provider interface to extract data from provider
       do {
         let soldData = await this.bridgeClient.getSolds(importData)
         // delay base on provider
         await this.delay()
         queryUrl = soldData['@odata.nextLink']
+        modificationTimestamp = soldData.value[soldData.value.length].ModificationTimestamp
         currentImportCount += soldData.value.length
 
         importData.serviceDetail = {
@@ -83,6 +86,7 @@ class GetSoldData {
           ServiceDetails: {
             startLink: importData.nextLink,
             nextLink: queryUrl,
+            modificationTimestamp: modificationTimestamp,
           },
         }
         await this.updateServiceStat(importData)
@@ -112,6 +116,7 @@ class GetSoldData {
           LastSuccessfulRun: new Date(),
           ServiceDetails: {
             nextLink: importData.nextLink,
+            modificationTimestamp: modificationTimestamp,
           },
         }
 
