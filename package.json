@@ -11,9 +11,7 @@
     "build:local": "cross-env NODE_PATH=. NODE_ENV=local ./pipeline/scripts/build.sh",
     "build:develop": "cross-env NODE_PATH=. NODE_ENV=develop ./pipeline/scripts/build.sh",
     "build:staging": "cross-env NODE_PATH=. NODE_ENV=staging ./pipeline/scripts/build.sh",
-    "build:production": "cross-env NODE_PATH=. NODE_ENV=production ./pipeline/scripts/build.sh",
-    "testbuild": "cross-env NODE_PATH=. NODE_ENV=develop node ./src/server.js",
-    "postbuild:develop": "cp package.json dist/package.json && cd dist && npm install --only=production && cd .. cp .env dist/.env"
+    "build:production": "cross-env NODE_PATH=. NODE_ENV=production ./pipeline/scripts/build.sh"
   },
   "author": "",
   "license": "ISC",
