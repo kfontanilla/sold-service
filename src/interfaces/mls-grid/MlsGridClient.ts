@@ -11,7 +11,7 @@ class MlsGridClient {
   async getSolds(importConfig: ImportConfig) {
     try {
       const queryUrl = importConfig.nextLink
-      const authorization = importConfig.password
+      const authorization = importConfig.ProviderPassword
       const options = {
         headers: {
           'Accept-Encoding': 'gzip, deflate, br',
@@ -29,15 +29,10 @@ class MlsGridClient {
   buildQueryUrl(ImportConfig: ImportConfig) {
     try {
       if (ImportConfig.AdditionalConfig.sold) {
-        const addedResource = ImportConfig.AdditionalConfig.sold.addedResource
-          ? '/' + ImportConfig.AdditionalConfig.sold.addedResource
-          : ''
-
         return (
           ImportConfig.ProviderUrl +
           ImportConfig.AdditionalConfig.sold.type +
-          addedResource +
-          '&$filter=' +
+          '?$count=true&$filter=' +
           encodeURI(ImportConfig.SearchQuery) +
           '&$top=' +
           ImportConfig.RequestLimit
