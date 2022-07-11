@@ -7,16 +7,26 @@ export interface ImportConfig {
   Id: Number
   LegacyImportId: String
   Name: String
-  SearchQuery: String
+  SearchQuery: string
   ProviderType: String
   ProviderUrl: Number
   ProviderUsername: String
   ProviderPassword: String
   UseProxy: Number
-  AdditionalHeaders: JSON
+  RequestLimit: Number
+  AdditionalHeaders: AdditionalHeaders
   RunIntervalMinutes: Number
-  AdditionalConfig: JSON
+  AdditionalConfig: AdditionalConfig
   CreatedAt: Date
   UpdatedAt: Date
   DeletedAt: Date
+  ModificationTimestamp?: string
+}
+
+interface AdditionalConfig {
+  [property: string]: any
+}
+
+interface AdditionalHeaders {
+  [property: string]: any
 }

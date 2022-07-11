@@ -6,14 +6,14 @@ const { INVALID_PATH_PARAMETER_ERROR } = require('src/domain/Errors')
 class GetSoldData {
   [property: string]: any
   constructor({
-    bridgeClient,
+    webAPIClient,
     responseFormatter,
     GetImportConfig,
     SetListingData,
     logger,
     serviceStatRepository,
   }: any) {
-    this.bridgeClient = bridgeClient
+    this.webAPIClient = webAPIClient
     this.responseFormatter = responseFormatter
     this.getImportConfig = GetImportConfig
     this.setListingData = SetListingData
@@ -28,9 +28,24 @@ class GetSoldData {
     try {
       const importData = await this.getImportConfig.get(LegacyImportId)
       // Base on providerType - call the appropriate Interface
-      importData.nextLink = this.bridgeClient.buildQueryUrl(importData)
+      // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
+      const serviceStatsData = await this.getLatestServiceStats(importData)
+      
+
+      if (serviceStatsData) {
+        if (typeof serviceStatsData.ServiceDetails.modificationTimestamp !== 'undefined') {
+          importData.ModificationTimestamp =
+            serviceStatsData.ServiceDetails.modificationTimestamp
+        }
+        if (typeof serviceStatsData.ServiceDetails.nextLink !== 'undefined') {
+          importData.nextLink = serviceStatsData.ServiceDetails.nextLink
+        }
+      }
+      
+      importData.nextLink = this.webAPIClient.buildQueryUrl(importData)
 
       const serviceStats = await this.updateServiceStat(importData)
+
       importData.AvailableListingCount = serviceStats.AvailableListingCount
       // process data
       this.apiCall(importData)
@@ -67,12 +82,15 @@ class GetSoldData {
       let currentImportCount = 0
       let finished = false
       let queryUrl = ''
+      let modificationTimestamp = ''
       // call provider interface to extract data from provider
       do {
-        let soldData = await this.bridgeClient.getSolds(importData)
+        let soldData = await this.webAPIClient.getSolds(importData)
         // delay base on provider
         await this.delay()
         queryUrl = soldData['@odata.nextLink']
+        modificationTimestamp =
+          soldData.value[soldData.value.length - 1].ModificationTimestamp
         currentImportCount += soldData.value.length
 
         importData.serviceDetail = {
@@ -83,6 +101,7 @@ class GetSoldData {
           ServiceDetails: {
             startLink: importData.nextLink,
             nextLink: queryUrl,
+            modificationTimestamp: modificationTimestamp,
           },
         }
         await this.updateServiceStat(importData)
@@ -112,6 +131,7 @@ class GetSoldData {
           LastSuccessfulRun: new Date(),
           ServiceDetails: {
             nextLink: importData.nextLink,
+            modificationTimestamp: modificationTimestamp,
           },
         }
 
@@ -127,7 +147,7 @@ class GetSoldData {
       this.logger.error({
         message:
           'API_CALL_SOLD_DATA_ERROR: Error while fetching sold data from data provider',
-        // error,
+        error,
       })
     }
   }
@@ -153,27 +173,26 @@ class GetSoldData {
    */
 
   async updateServiceStat(importData: ImportConfig): Promise<ServiceDetail> {
-
-    let serviceDetail = importData.serviceDetail
-
+    let serviceDetailData = importData.serviceDetail
     try {
-      if (typeof importData.serviceDetail === 'undefined') {
-        const serviceStats = await this.bridgeClient.getSolds(importData)
+      if (typeof serviceDetailData === 'undefined') {
+        const soldDataServiceStats = await this.webAPIClient.getSolds(
+          importData
+        )
+
         await this.delay()
-        serviceDetail = {
+        serviceDetailData = {
           ImportConfigId: importData.Id,
-          AvailableListingCount: serviceStats['@odata.count'],
+          AvailableListingCount: soldDataServiceStats['@odata.count'],
           ImageDownLoaded: 0,
           ServiceDetails: {
             startLink: importData.nextLink,
-            nextLink: serviceStats['@odata.nextLink'],
+            nextLink: soldDataServiceStats['@odata.nextLink'],
           },
         }
       }
 
-      await this.serviceStatRepository.setServiceStat(serviceDetail)
-
-    
+      await this.serviceStatRepository.setServiceStat(serviceDetailData)
     } catch (error: any) {
       const errMessage = error.name
       this.logger.error({
@@ -183,7 +202,34 @@ class GetSoldData {
       })
     }
 
-    return serviceDetail
+    return serviceDetailData
+  }
+
+  /**
+   * Update service stats on every run
+   *
+   * @param  {ImportConfig} importData
+   *
+   * @returns {ServiceDetail} serviceDetail
+   */
+
+  async getLatestServiceStats(importData: ImportConfig) {
+    try {
+      const options = {
+        where: { ImportConfigId: importData.Id },
+        order: [['LastScheduledRun', 'DESC']],
+      }
+      const serviceStatsRecord = await this.serviceStatRepository.getOne(
+        options
+      )
+      return serviceStatsRecord
+    } catch (error: any) {
+      const errMessage = error.name
+      this.logger.error({
+        message: 'getLatestServiceStats_ERROR',
+        errMessage,
+      })
+    }
   }
 
   async delay() {
