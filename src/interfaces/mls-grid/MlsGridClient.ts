@@ -14,12 +14,13 @@ class MlsGridClient {
       const authorization = importConfig.ProviderPassword
       const options = {
         headers: {
-          'Authorization' : authorization,
+          'Authorization' : 'Bearer ' + authorization,
           'Accept-Encoding': 'gzip, deflate, br',
         },
       }
 
       const { data } = await this.httpClient.get(queryUrl, options)
+
 
       return data
     } catch (error) {

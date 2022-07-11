@@ -4,5 +4,5 @@ export interface ServiceDetail {
     ImportedListingCount?: number
     ImageDownLoaded?: number
     LastSuccessfulRun?: Date
-    ServiceDetails: { startLink?: any; nextLink?: string; modificationTimestamp?: string }
+    ServiceDetails: { startLink?: any; nextLink?: string; modificationTimestamp?: string; }
   }

@@ -8,6 +8,7 @@ const listingDataOperations = require('src/app/listingdata')
 const jsonPlaceHolderClient = require('src/interfaces/json-place-holder')
 const mlsGridClient = require('src/interfaces/mls-grid')
 const bridgeClient = require('src/interfaces/bridge')
+const webAPIClient = require('src/interfaces/base')
 import http from './infra/http'
 import { logger } from './infra/logger/logger'
 import utilOperations from './utils'
@@ -45,5 +46,6 @@ container.registerClass(listingDataOperations)
 container.registerClass(jsonPlaceHolderClient)
 container.registerClass(mlsGridClient)
 container.registerClass(bridgeClient)
+container.registerClass(webAPIClient)
 
 export default container
