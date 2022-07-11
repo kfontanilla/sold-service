@@ -20,6 +20,7 @@ export interface ImportConfig {
   CreatedAt: Date
   UpdatedAt: Date
   DeletedAt: Date
+  ModificationTimestamp?: string
 }
 
 interface AdditionalConfig {

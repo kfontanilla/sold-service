@@ -31,7 +31,11 @@ class MlsGridClient {
   buildQueryUrl(ImportConfig: ImportConfig) {
     try {
       if (ImportConfig.AdditionalConfig.sold) {
-        const filterQuery = 'MlgCanView eq true and ' + ImportConfig.SearchQuery
+        let filterQuery = 'MlgCanView eq true and ' + ImportConfig.SearchQuery
+        // check if modification timestamp is present 
+        if(typeof ImportConfig.ModificationTimestamp !== 'undefined'){
+          filterQuery += ' and ModificationTimestamp gt ' + ImportConfig.ModificationTimestamp
+        }
 
         return (
           ImportConfig.ProviderUrl +

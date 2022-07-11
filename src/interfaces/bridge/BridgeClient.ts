@@ -28,7 +28,7 @@ class BridgeClient {
 
   buildQueryUrl(ImportConfig: ImportConfig) {
     try {
-      if (ImportConfig.AdditionalConfig.sold) {
+      if (ImportConfig.AdditionalConfig.sold && typeof ImportConfig.nextLink === 'undefined') {
         const addedResource = ImportConfig.AdditionalConfig.sold.addedResource
           ? '/' + ImportConfig.AdditionalConfig.sold.addedResource
           : ''
@@ -44,6 +44,8 @@ class BridgeClient {
           '&$top=' +
           ImportConfig.RequestLimit
         )
+      } else {
+        return ImportConfig.nextLink
       }
     } catch (error) {
       throw error

@@ -29,8 +29,20 @@ class GetSoldData {
       const importData = await this.getImportConfig.get(LegacyImportId)
       // Base on providerType - call the appropriate Interface
       // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
-      importData.nextLink = this.webAPIClient.buildQueryUrl(importData)
+      const serviceStatsData = await this.getLatestServiceStats(importData)
+      
 
+      if (serviceStatsData) {
+        if (typeof serviceStatsData.ServiceDetails.modificationTimestamp !== 'undefined') {
+          importData.ModificationTimestamp =
+            serviceStatsData.ServiceDetails.modificationTimestamp
+        }
+        if (typeof serviceStatsData.ServiceDetails.nextLink !== 'undefined') {
+          importData.nextLink = serviceStatsData.ServiceDetails.nextLink
+        }
+      }
+      
+      importData.nextLink = this.webAPIClient.buildQueryUrl(importData)
 
       const serviceStats = await this.updateServiceStat(importData)
 
@@ -77,7 +89,8 @@ class GetSoldData {
         // delay base on provider
         await this.delay()
         queryUrl = soldData['@odata.nextLink']
-        modificationTimestamp = soldData.value[soldData.value.length - 1].ModificationTimestamp
+        modificationTimestamp =
+          soldData.value[soldData.value.length - 1].ModificationTimestamp
         currentImportCount += soldData.value.length
 
         importData.serviceDetail = {
@@ -160,16 +173,13 @@ class GetSoldData {
    */
 
   async updateServiceStat(importData: ImportConfig): Promise<ServiceDetail> {
-
     let serviceDetailData = importData.serviceDetail
-
     try {
-      const typ = typeof serviceDetailData
-
-
       if (typeof serviceDetailData === 'undefined') {
-        const soldDataServiceStats = await this.webAPIClient.getSolds(importData)
-        
+        const soldDataServiceStats = await this.webAPIClient.getSolds(
+          importData
+        )
+
         await this.delay()
         serviceDetailData = {
           ImportConfigId: importData.Id,
@@ -183,8 +193,6 @@ class GetSoldData {
       }
 
       await this.serviceStatRepository.setServiceStat(serviceDetailData)
-
-    
     } catch (error: any) {
       const errMessage = error.name
       this.logger.error({
@@ -195,6 +203,33 @@ class GetSoldData {
     }
 
     return serviceDetailData
+  }
+
+  /**
+   * Update service stats on every run
+   *
+   * @param  {ImportConfig} importData
+   *
+   * @returns {ServiceDetail} serviceDetail
+   */
+
+  async getLatestServiceStats(importData: ImportConfig) {
+    try {
+      const options = {
+        where: { ImportConfigId: importData.Id },
+        order: [['LastScheduledRun', 'DESC']],
+      }
+      const serviceStatsRecord = await this.serviceStatRepository.getOne(
+        options
+      )
+      return serviceStatsRecord
+    } catch (error: any) {
+      const errMessage = error.name
+      this.logger.error({
+        message: 'getLatestServiceStats_ERROR',
+        errMessage,
+      })
+    }
   }
 
   async delay() {
