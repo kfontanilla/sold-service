@@ -23,6 +23,7 @@
     "body-parser": "^1.19.1",
     "compression": "^1.7.4",
     "cross-env": "^7.0.3",
+    "dd-trace": "^2.10.0",
     "dotenv": "^16.0.1",
     "express": "^4.17.2",
     "express-routes-catalogue": "^1.1.0",
