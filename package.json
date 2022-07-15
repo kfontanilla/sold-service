@@ -6,9 +6,8 @@
   "scripts": {
     "migrate": "tsc config/database.ts && npm run start:migration",
     "start:migration": "npx sequelize db:migrate",
-    "swagger-autogen": "node src/swagger.js",
     "local": "node src/swagger.js && cross-env NODE_PATH=. NODE_ENV=local nodemon --watch './**/*.ts' --exec 'ts-node' src/server.ts",
-    "pm2-non-local": "node src/swagger.js && cross-env NODE_PATH=. NODE_ENV=production pm2 start ./src/server.js --watch -i max",
+    "pm2-non-local": "node src/swagger.js && cross-env NODE_PATH=. pm2 start ./src/server.js --watch -i max",
     "build:local": "cross-env NODE_PATH=. NODE_ENV=local ./pipeline/scripts/build.sh",
     "build:develop": "cross-env NODE_PATH=. NODE_ENV=develop ./pipeline/scripts/build.sh",
     "build:staging": "cross-env NODE_PATH=. NODE_ENV=staging ./pipeline/scripts/build.sh",
@@ -24,6 +23,7 @@
     "body-parser": "^1.19.1",
     "compression": "^1.7.4",
     "cross-env": "^7.0.3",
+    "dd-trace": "^2.10.0",
     "dotenv": "^16.0.1",
     "express": "^4.17.2",
     "express-routes-catalogue": "^1.1.0",
