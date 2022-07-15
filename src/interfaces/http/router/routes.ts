@@ -5,10 +5,6 @@ const routes = () => {
   // Initialize router
   const router = new Router()
 
-  router.get('/', (req: any, res: any) => {
-    res.send('Endpoint Reached!')
-  })
-
   router.get('/solds/:LegacyImportId', (...args: any) =>
     container.resolve('GetSoldData').execute(...args)
   )
