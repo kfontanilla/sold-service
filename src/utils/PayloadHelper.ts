@@ -14,7 +14,7 @@ class PayloadHelper {
         CompensationGroup: this.pick(data, ...compensationGroupFields),
         MediaGroup: this.pick(data, ...mediaGroupFields),
         ShowingGroup: this.pick(data, ...showingGroupFields),
-        RemarkGroupFields: this.pick(data, ...remarksGroupFields),
+        RemarkGroup: this.pick(data, ...remarksGroupFields),
       })
     })
   }
