@@ -9,14 +9,19 @@ const { showingGroupFields } = require('src/domain/ShowingGroupFields')
 const { remarksGroupFields } = require('src/domain/RemarksGroupFields')
 
 // Location Data Groups
-const { schoolGroupFields } =  require('src/domain/SchoolGroupFields')
-const { areaGroupFields } =  require('src/domain/AreaGroupFields')
+const { schoolGroupFields } = require('src/domain/SchoolGroupFields')
+const { areaGroupFields } = require('src/domain/AreaGroupFields')
+
+// Property Details Groups
 
 class PayloadHelper {
   /**
-   * Will add DatesGroup, ClosingGroup, CompensationGroup, MediaGroup, ShowingGroup, RemarkGroup to the submitted dataset
+   * Will add DatesGroup, ClosingGroup, CompensationGroup, MediaGroup, ShowingGroup, RemarkGroup for Listing Data Groups
+   * Will add SchoolGroup, AreaGroup for Location Data Groups
+   * Will add BusinessGroup, CharacteristicGroup, EquipmentGroup, FarmingGroup, FinancialGroup, HOAGroup,
+   * OccupantOwnerGroup, StructureGroup, TaxGroup, UtilitiesGroup for Property Details Group
    */
-  generateSoldsListingDataJsonDataTypePayload(dataSet: object[]): object[] {
+  async generateSoldsJsonDataTypePayload(dataSet: object[]): Promise<object | null>  {
     return dataSet.map((data: any) => {
       return Object.assign(data, {
         DatesGroup: this.pick(data, ...datesGroupFields),
@@ -25,33 +30,11 @@ class PayloadHelper {
         MediaGroup: this.pick(data, ...mediaGroupFields),
         ShowingGroup: this.pick(data, ...showingGroupFields),
         RemarkGroup: this.pick(data, ...remarksGroupFields),
+        SchoolGroup: this.pick(data, ...schoolGroupFields),
+        AreaGroup: this.pick(data, ...areaGroupFields),
       })
     })
   }
-
-  /**
-   * Will add SchoolGroup, AreaGroup, to the submitted dataset
-   */
-  generateSoldsLocationDataJsonDataTypePayload(dataSet: object[]): object[] {
-    return dataSet.map((data: any) => {
-      return Object.assign(data, {
-        SchoolGroup: this.pick(data, ...datesGroupFields),
-        AreaGroup: this.pick(data, ...closingGroupFields),
-      })
-    })
-  }
-
-    /**
-   * Will add BusinessGroup, CharacteristicGroup, EquipmentGroup, FarmingGroup, FinancialGroup, HOAGroup, OccupantOwnerGroup, StructureGroup, TaxGroup, UtilitiesGroup to the submitted dataset
-   */
-     generateSoldsPropertyDetailsDataJsonDataTypePayload(dataSet: object[]): object[] {
-      return dataSet.map((data: any) => {
-        return Object.assign(data, {
-          SchoolGroup: this.pick(data, ...datesGroupFields),
-          AreaGroup: this.pick(data, ...closingGroupFields),
-        })
-      })
-    }
 
   /**
    * Gets the same parameters on object based on keys provided.
