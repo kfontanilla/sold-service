@@ -1,13 +1,13 @@
-const tracer = require('dd-trace').init({
-  logInjection: true,
-})
+// const tracer = require('dd-trace').init({
+//   logInjection: true,
+// })
 
-const appName = 'sold-service'
-tracer.use('http', { service: appName })
-tracer.use('mysql', { service: appName })
-tracer.use('dns', { service: appName })
-tracer.use('redis', { service: appName })
-tracer.use('http2', { service: appName })
+// const appName = 'sold-service'
+// tracer.use('http', { service: appName })
+// tracer.use('mysql', { service: appName })
+// tracer.use('dns', { service: appName })
+// tracer.use('redis', { service: appName })
+// tracer.use('http2', { service: appName })
 
 import express from 'express'
 import { config } from 'process'
