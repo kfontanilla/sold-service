@@ -6,6 +6,9 @@ const { showingGroupFields } = require('src/domain/ShowingGroupFields')
 const { remarksGroupFields } = require('src/domain/RemarksGroupFields')
 
 class PayloadHelper {
+  /**
+   * Will add DatesGroup, ClosingGroup, CompensationGroup, MediaGroup, ShowingGroup, RemarkGroup to the submitted dataset
+   */
   generateSoldsJsonDataTypePayload(dataSet: object[]): object[] {
     return dataSet.map((data: any) => {
       return Object.assign(data, {
@@ -19,6 +22,9 @@ class PayloadHelper {
     })
   }
 
+  /**
+   * Gets the same parameters on object based on keys provided.
+   */
   pick<T, K extends keyof T>(object: T, ...keys: K[]): Pick<T, K> {
     return keys.reduce(
       (previousValue, currentValue) => (
