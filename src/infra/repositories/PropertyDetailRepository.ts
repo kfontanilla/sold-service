@@ -7,9 +7,9 @@ class PropertyDetailRepository extends BaseRDSRepository {
 
   async setPropertyDetail(ListingData: any) {
     try {
-      return await this.save(ListingData)
+      return await this.insertMany(ListingData)
     } catch (error) {
-      throw error;
+      throw error
     }
   }
 }

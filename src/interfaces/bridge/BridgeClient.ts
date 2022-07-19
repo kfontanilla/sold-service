@@ -41,8 +41,8 @@ class BridgeClient {
           ImportConfig.ProviderPassword +
           '&$filter=' +
           encodeURI(ImportConfig.SearchQuery) +
-          '&$top=' +
-          ImportConfig.RequestLimit
+          '&$top=10' // +
+          // ImportConfig.RequestLimit
         )
       } else {
         return ImportConfig.nextLink

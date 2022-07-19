@@ -13,6 +13,16 @@ const { schoolGroupFields } = require('src/domain/SchoolGroupFields')
 const { areaGroupFields } = require('src/domain/AreaGroupFields')
 
 // Property Details Groups
+const { businessGroupFields } = require('src/domain/BusinessGroupFields')
+const { characteristicGroupFields } = require('src/domain/CharacteristicGroupFields')
+const { equipmentGroupFields } = require('src/domain/EquipmentGroupFields')
+const { farmingGroupFields } = require('src/domain/FarmingGroupFields')
+const { financialGroupFields } = require('src/domain/FinancialGroupFields')
+const { hoaGroupFields } = require('src/domain/HOAGroupFields')
+const { occupantOwnerGroupFields } = require('src/domain/OccupantOwnerGroupFields')
+const { structureGroupFields } = require('src/domain/StructureGroupFields')
+const { taxGroupFields } = require('src/domain/TaxGroupFields')
+const { utilitiesGroupFields } = require('src/domain/UtilitiesGroupFields')
 
 class PayloadHelper {
   /**
@@ -32,6 +42,16 @@ class PayloadHelper {
         RemarkGroup: this.pick(data, ...remarksGroupFields),
         SchoolGroup: this.pick(data, ...schoolGroupFields),
         AreaGroup: this.pick(data, ...areaGroupFields),
+        BusinessGroup: this.pick(data, ...businessGroupFields),
+        CharacteristicGroup: this.pick(data, ...characteristicGroupFields),
+        EquipmentGroup: this.pick(data, ...equipmentGroupFields),
+        FarmingGroup: this.pick(data, ...farmingGroupFields),
+        FinancialGroup: this.pick(data, ...financialGroupFields),
+        HOAGroup: this.pick(data, ...hoaGroupFields),
+        OccupantOwnerGroup: this.pick(data, ...occupantOwnerGroupFields),
+        StructureGroup: this.pick(data, ...structureGroupFields),
+        TaxGroup: this.pick(data, ...taxGroupFields),
+        UtilitiesGroup: this.pick(data, ...utilitiesGroupFields),
       })
     })
   }
