@@ -30,6 +30,7 @@ class GetSoldData {
       // Base on providerType - call the appropriate Interface
       // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
       const serviceStatsData = await this.getLatestServiceStats(importData)
+      importData.nextLink = this.webAPIClient.buildQueryUrl(importData)
       let serviceStats = null
       if (serviceStatsData) {
         if (
@@ -43,17 +44,14 @@ class GetSoldData {
           importData.nextLink = serviceStatsData.ServiceDetails.nextLink
         }
         serviceStats = serviceStatsData
-
         importData.ImportedListingCount = serviceStats.ImportedListingCount
       } else {
         serviceStats = await this.updateServiceStat(importData)
       }
-      importData.nextLink = this.webAPIClient.buildQueryUrl(importData)
-
+     
       importData.AvailableListingCount = serviceStats.AvailableListingCount
       
       // process data
-      // console.log(importData)
       this.apiCall(importData)
       // display current status of sold service run
       return this.responseFormatter.success(response, serviceStats)
@@ -99,6 +97,7 @@ class GetSoldData {
           currentImportCount,
           finished,
         })
+        
         await this.delay()
         queryUrl = soldData['@odata.nextLink']
         if (typeof soldData.value[soldData.value.length - 1] !== 'undefined') {
