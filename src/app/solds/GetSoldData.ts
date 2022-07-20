@@ -241,19 +241,19 @@ class GetSoldData {
       ImportedListingCount: importConfigImportedListingCount,
     } = importConfigData
 
-    let {
-      ServiceDetails: {
-        modificationTimestamp: serviceStatsMofificationTimestamp,
-        nextLink: serviceStatsNextLink,
-      },
-      ImportedListingCount: serviceStatsImportedListingCount,
-    } = serviceStatsData
-
     importConfigNextLink = this.webAPIClient.buildQueryUrl(importConfigData)
 
     // Base on providerType - call the appropriate Interface
     // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
     if (serviceStatsData) {
+      let {
+        ServiceDetails: {
+          modificationTimestamp: serviceStatsMofificationTimestamp,
+          nextLink: serviceStatsNextLink,
+        },
+        ImportedListingCount: serviceStatsImportedListingCount,
+      } = serviceStatsData
+
       if (serviceStatsMofificationTimestamp !== 'undefined') {
         importConfigModificationTimestamp = serviceStatsMofificationTimestamp
       }
