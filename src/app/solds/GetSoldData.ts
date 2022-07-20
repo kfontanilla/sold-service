@@ -231,14 +231,14 @@ class GetSoldData {
     serviceStatsData: any = {}
   ): ImportConfig {
     let {
-      ModificationTimestamp: importConfigModificationTimestamp,
+      ModificationTimestamp: importConfigModificationTimestamp = null,
       nextLink: importConfigNextLink,
       importedListingCount: importConfigImportedListingCount,
     } = importConfigData
 
     let {
       ServiceDetail: {
-        ModificationTimestamp: serviceStatsMofificationTimestamp,
+        modificationTimestamp: serviceStatsMofificationTimestamp = null,
         nextLink: serviceStatsNextLink,
       },
       importedListingCount: serviceStatsImportedListingCount,
