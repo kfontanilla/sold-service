@@ -1,7 +1,6 @@
 {
   "swagger": "2.0",
   "info": {
-    "host": "",
     "version": "1.0.0",
     "title": "Sold Service Api",
     "description": "RESO Compliant extraction of webapi feeds for Sold Data"
