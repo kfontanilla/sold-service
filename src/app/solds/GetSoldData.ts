@@ -26,37 +26,30 @@ class GetSoldData {
       params: { LegacyImportId },
     } = request
     try {
-      const importData = await this.getImportConfig.get(LegacyImportId)
+      const importConfigData =
+        await this.importConfigRepository.getByLegacyImportId(LegacyImportId)
+
       // Base on providerType - call the appropriate Interface
       // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
-      const serviceStatsData = await this.getLatestServiceStats(importData)
-      let serviceStats = null
-      if (serviceStatsData) {
-        if (
-          typeof serviceStatsData.ServiceDetails.modificationTimestamp !==
-          'undefined'
-        ) {
-          importData.ModificationTimestamp =
-            serviceStatsData.ServiceDetails.modificationTimestamp
-        }
-        if (typeof serviceStatsData.ServiceDetails.nextLink !== 'undefined') {
-          importData.nextLink = serviceStatsData.ServiceDetails.nextLink
-        }
-        serviceStats = serviceStatsData
+      const serviceStatsData =
+        await this.serviceStatRepository.getLatestServiceStats(importConfigData)
 
-        importData.ImportedListingCount = serviceStats.ImportedListingCount
-      } else {
-        serviceStats = await this.updateServiceStat(importData)
-      }
-      importData.nextLink = this.webAPIClient.buildQueryUrl(importData)
+      const newImportConfigData = this.modifyImportConfigData(
+        importConfigData,
+        serviceStatsData
+      )
 
-      importData.AvailableListingCount = serviceStats.AvailableListingCount
-      
+      const updatedServiceStatsData = await this.updateServiceStat(
+        newImportConfigData
+      )
+
+      newImportConfigData.AvailableListingCount =
+        serviceStatsData.AvailableListingCount
+
       // process data
-      // console.log(importData)
-      this.apiCall(importData)
+      this.apiCall(newImportConfigData)
       // display current status of sold service run
-      return this.responseFormatter.success(response, serviceStats)
+      return this.responseFormatter.success(response, updatedServiceStatsData)
     } catch (error: any) {
       const { message } = error
 
@@ -99,6 +92,7 @@ class GetSoldData {
           currentImportCount,
           finished,
         })
+        
         await this.delay()
         queryUrl = soldData['@odata.nextLink']
         if (typeof soldData.value[soldData.value.length - 1] !== 'undefined') {
@@ -134,8 +128,6 @@ class GetSoldData {
         })
 
         await this.updateServiceStat(importData)
-
-
       } while (!finished)
 
       if (finished) {
@@ -222,33 +214,6 @@ class GetSoldData {
     return serviceDetailData
   }
 
-  /**
-   * Update service stats on every run
-   *
-   * @param  {ImportConfig} importData
-   *
-   * @returns {ServiceDetail} serviceDetail
-   */
-
-  async getLatestServiceStats(importData: ImportConfig) {
-    try {
-      const options = {
-        where: { ImportConfigId: importData.Id },
-        order: [['LastScheduledRun', 'DESC']],
-      }
-      const serviceStatsRecord = await this.serviceStatRepository.getOne(
-        options
-      )
-      return serviceStatsRecord
-    } catch (error: any) {
-      const errMessage = error.name
-      this.logger.error({
-        message: 'getLatestServiceStats_ERROR',
-        errMessage,
-      })
-    }
-  }
-
   async delay() {
     const period = 500
     if (period > 0) {
@@ -259,6 +224,48 @@ class GetSoldData {
       })
     }
     return Promise.resolve(0)
+  }
+
+  modifyImportConfigData(
+    importConfigData: any = {},
+    serviceStatsData: any = {}
+  ): ImportConfig {
+    let {
+      ModificationTimestamp: importConfigModificationTimestamp,
+      nextLink: importConfigNextLink,
+      importedListingCount: importConfigImportedListingCount,
+    } = importConfigData
+
+    let {
+      ServiceDetail: {
+        ModificationTimestamp: serviceStatsMofificationTimestamp,
+        nextLink: serviceStatsNextLink,
+      },
+      importedListingCount: serviceStatsImportedListingCount,
+    } = serviceStatsData
+
+    importConfigNextLink = this.webAPIClient.buildQueryUrl(importConfigData)
+
+    // Base on providerType - call the appropriate Interface
+    // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
+    if (serviceStatsData) {
+      if (serviceStatsMofificationTimestamp !== 'undefined') {
+        importConfigModificationTimestamp = serviceStatsMofificationTimestamp
+      }
+
+      if (typeof serviceStatsNextLink !== 'undefined') {
+        importConfigNextLink = serviceStatsNextLink
+      }
+
+      importConfigImportedListingCount = serviceStatsImportedListingCount
+    }
+
+    return {
+      ...importConfigData,
+      ModificationTimestamp: importConfigModificationTimestamp,
+      nextLink: importConfigNextLink,
+      importedListingCount: importConfigImportedListingCount,
+    }
   }
 }
 
