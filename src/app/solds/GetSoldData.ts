@@ -1,3 +1,4 @@
+import e from 'express'
 import { ImportConfig } from '../../domain/ImportConfig'
 import { ServiceDetail } from '../../domain/ServiceDetail'
 
@@ -8,14 +9,14 @@ class GetSoldData {
   constructor({
     webAPIClient,
     responseFormatter,
-    GetImportConfig,
+    importConfigRepository,
     SetListingData,
     logger,
     serviceStatRepository,
   }: any) {
     this.webAPIClient = webAPIClient
     this.responseFormatter = responseFormatter
-    this.getImportConfig = GetImportConfig
+    this.importConfigRepository = importConfigRepository
     this.setListingData = SetListingData
     this.logger = logger
     this.serviceStatRepository = serviceStatRepository
@@ -31,25 +32,24 @@ class GetSoldData {
 
       // Base on providerType - call the appropriate Interface
       // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
-      const serviceStatsData =
+      let serviceStatsData =
         await this.serviceStatRepository.getLatestServiceStats(importConfigData)
 
       const newImportConfigData = this.modifyImportConfigData(
         importConfigData,
         serviceStatsData
       )
-
-      const updatedServiceStatsData = await this.updateServiceStat(
-        newImportConfigData
-      )
+      if (!serviceStatsData) {
+        serviceStatsData = await this.updateServiceStat(newImportConfigData)
+      }
 
       newImportConfigData.AvailableListingCount =
         serviceStatsData.AvailableListingCount
 
       // process data
-      this.apiCall(newImportConfigData)
+      this.apiCall( newImportConfigData )
       // display current status of sold service run
-      return this.responseFormatter.success(response, updatedServiceStatsData)
+      return this.responseFormatter.success(response, serviceStatsData)
     } catch (error: any) {
       const { message } = error
 
@@ -78,7 +78,10 @@ class GetSoldData {
 
   async apiCall(importData: ImportConfig) {
     try {
-      let currentImportCount = (typeof importData.ImportedListingCount !== 'undefined' ? importData.ImportedListingCount : 0)
+      let currentImportCount =
+        typeof importData.ImportedListingCount !== 'undefined'
+          ? importData.ImportedListingCount
+          : 0
       let finished = false
       let queryUrl = ''
       let modificationTimestamp = ''
@@ -86,13 +89,12 @@ class GetSoldData {
       do {
         let soldData = await this.webAPIClient.getSolds(importData)
         // delay base on provider
-        
+
         this.logger.info({
           message: 'GET_SOLD_DATA_API_CALL',
           currentImportCount,
           finished,
         })
-        
         await this.delay()
         queryUrl = soldData['@odata.nextLink']
         if (typeof soldData.value[soldData.value.length - 1] !== 'undefined') {
@@ -183,6 +185,7 @@ class GetSoldData {
 
   async updateServiceStat(importData: ImportConfig): Promise<ServiceDetail> {
     let serviceDetailData = importData.serviceDetail
+
     try {
       if (typeof serviceDetailData === 'undefined') {
         const soldDataServiceStats = await this.webAPIClient.getSolds(
@@ -233,22 +236,22 @@ class GetSoldData {
     let {
       ModificationTimestamp: importConfigModificationTimestamp,
       nextLink: importConfigNextLink,
-      importedListingCount: importConfigImportedListingCount,
+      ImportedListingCount: importConfigImportedListingCount,
     } = importConfigData
-
-    let {
-      ServiceDetail: {
-        ModificationTimestamp: serviceStatsMofificationTimestamp,
-        nextLink: serviceStatsNextLink,
-      },
-      importedListingCount: serviceStatsImportedListingCount,
-    } = serviceStatsData
 
     importConfigNextLink = this.webAPIClient.buildQueryUrl(importConfigData)
 
     // Base on providerType - call the appropriate Interface
     // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
     if (serviceStatsData) {
+      let {
+        ServiceDetails: {
+          modificationTimestamp: serviceStatsMofificationTimestamp,
+          nextLink: serviceStatsNextLink,
+        },
+        ImportedListingCount: serviceStatsImportedListingCount,
+      } = serviceStatsData
+
       if (serviceStatsMofificationTimestamp !== 'undefined') {
         importConfigModificationTimestamp = serviceStatsMofificationTimestamp
       }
@@ -258,14 +261,14 @@ class GetSoldData {
       }
 
       importConfigImportedListingCount = serviceStatsImportedListingCount
+      importConfigData.serviceDetail = serviceStatsData
+      importConfigData.ModificationTimestamp = importConfigModificationTimestamp
+      
     }
+    importConfigData.ImportedListingCount = importConfigImportedListingCount
+    importConfigData.nextLink = importConfigNextLink
 
-    return {
-      ...importConfigData,
-      ModificationTimestamp: importConfigModificationTimestamp,
-      nextLink: importConfigNextLink,
-      importedListingCount: importConfigImportedListingCount,
-    }
+    return importConfigData
   }
 }
 
