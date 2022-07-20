@@ -3,5 +3,5 @@ const payloadHelper = require('./PayloadHelper')
 
 export = {
   responseFormatter,
-  payloadHelper
+  payloadHelper,
 }

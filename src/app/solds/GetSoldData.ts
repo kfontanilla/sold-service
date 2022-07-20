@@ -30,24 +30,30 @@ class GetSoldData {
       // Base on providerType - call the appropriate Interface
       // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
       const serviceStatsData = await this.getLatestServiceStats(importData)
-      
-
+      let serviceStats = null
       if (serviceStatsData) {
-        if (typeof serviceStatsData.ServiceDetails.modificationTimestamp !== 'undefined') {
+        if (
+          typeof serviceStatsData.ServiceDetails.modificationTimestamp !==
+          'undefined'
+        ) {
           importData.ModificationTimestamp =
             serviceStatsData.ServiceDetails.modificationTimestamp
         }
         if (typeof serviceStatsData.ServiceDetails.nextLink !== 'undefined') {
           importData.nextLink = serviceStatsData.ServiceDetails.nextLink
         }
+        serviceStats = serviceStatsData
+
+        importData.ImportedListingCount = serviceStats.ImportedListingCount
+      } else {
+        serviceStats = await this.updateServiceStat(importData)
       }
-      
       importData.nextLink = this.webAPIClient.buildQueryUrl(importData)
 
-      const serviceStats = await this.updateServiceStat(importData)
-
       importData.AvailableListingCount = serviceStats.AvailableListingCount
+      
       // process data
+      // console.log(importData)
       this.apiCall(importData)
       // display current status of sold service run
       return this.responseFormatter.success(response, serviceStats)
@@ -79,7 +85,7 @@ class GetSoldData {
 
   async apiCall(importData: ImportConfig) {
     try {
-      let currentImportCount = 0
+      let currentImportCount = (typeof importData.ImportedListingCount !== 'undefined' ? importData.ImportedListingCount : 0)
       let finished = false
       let queryUrl = ''
       let modificationTimestamp = ''
@@ -87,10 +93,26 @@ class GetSoldData {
       do {
         let soldData = await this.webAPIClient.getSolds(importData)
         // delay base on provider
+        
+        this.logger.info({
+          message: 'GET_SOLD_DATA_API_CALL',
+          currentImportCount,
+          finished,
+        })
         await this.delay()
         queryUrl = soldData['@odata.nextLink']
-        modificationTimestamp =
-          soldData.value[soldData.value.length - 1].ModificationTimestamp
+        if (typeof soldData.value[soldData.value.length - 1] !== 'undefined') {
+          modificationTimestamp =
+            soldData.value[soldData.value.length - 1].ModificationTimestamp
+        }
+        finished = typeof queryUrl === 'undefined'
+        importData.nextLink = !finished ? queryUrl : importData.nextLink
+        // iterate over soldData
+        const processedData = await this.processData({
+          importData: importData,
+          soldData: soldData,
+        })
+
         currentImportCount += soldData.value.length
 
         importData.serviceDetail = {
@@ -104,21 +126,16 @@ class GetSoldData {
             modificationTimestamp: modificationTimestamp,
           },
         }
-        await this.updateServiceStat(importData)
-
-        finished = typeof queryUrl === 'undefined'
-        importData.nextLink = !finished ? queryUrl : importData.nextLink
 
         this.logger.info({
           message: 'GET_SOLD_DATA_COUNTER',
           currentImportCount,
           finished,
         })
-        // iterate over soldData
-        const processedData = await this.processData({
-          importData: importData,
-          soldData: soldData,
-        })
+
+        await this.updateServiceStat(importData)
+
+
       } while (!finished)
 
       if (finished) {

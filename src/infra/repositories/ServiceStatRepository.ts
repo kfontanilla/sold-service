@@ -10,7 +10,7 @@ class ServiceStatRepository extends BaseRDSRepository {
     try {
       return await this.save(ServiceDetail)
     } catch (error) {
-      throw error;
+      throw error
     }
   }
 }

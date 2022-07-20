@@ -14,7 +14,7 @@ if (process.env.NODE_ENV !== 'local') {
 import express from 'express'
 import { config } from 'process'
 import swaggerUi from 'swagger-ui-express'
-import * as Document from './utils/swagger/swagger-doc.json'
+import * as Document from './swagger/swagger-doc.json'
 
 // // Routes configuration
 const routes = require('./interfaces/http/router/routes')
