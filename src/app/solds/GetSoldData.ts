@@ -233,7 +233,7 @@ class GetSoldData {
     let {
       ModificationTimestamp: importConfigModificationTimestamp,
       nextLink: importConfigNextLink,
-      importedListingCount: importConfigImportedListingCount,
+      ImportedListingCount: importConfigImportedListingCount,
     } = importConfigData
 
     let {
@@ -241,7 +241,7 @@ class GetSoldData {
         modificationTimestamp: serviceStatsMofificationTimestamp,
         nextLink: serviceStatsNextLink,
       },
-      importedListingCount: serviceStatsImportedListingCount,
+      ImportedListingCount: serviceStatsImportedListingCount,
     } = serviceStatsData
 
     importConfigNextLink = this.webAPIClient.buildQueryUrl(importConfigData)
@@ -264,7 +264,7 @@ class GetSoldData {
       ...importConfigData,
       ModificationTimestamp: importConfigModificationTimestamp,
       nextLink: importConfigNextLink,
-      importedListingCount: importConfigImportedListingCount,
+      ImportedListingCount: importConfigImportedListingCount,
     }
   }
 }
