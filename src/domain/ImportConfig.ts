@@ -1,9 +1,6 @@
 import { ServiceDetail } from "./ServiceDetail"
 
 export interface ImportConfig {
-  nextLink: any
-  AvailableListingCount: any
-  serviceDetail: ServiceDetail
   Id: Number
   LegacyImportId: String
   Name: String
@@ -20,7 +17,11 @@ export interface ImportConfig {
   CreatedAt: Date
   UpdatedAt: Date
   DeletedAt: Date
-  ModificationTimestamp?: string
+  ModificationTimestamp?: string,
+  ImportedListingCount?: any
+  nextLink?: any
+  AvailableListingCount?: any
+  serviceDetail: ServiceDetail
 }
 
 interface AdditionalConfig {
