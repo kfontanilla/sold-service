@@ -1,13 +1,15 @@
-const tracer = require('dd-trace').init({
-  logInjection: true,
-})
+if (process.env.NODE_ENV !== 'local') {
+  const tracer = require('dd-trace').init({
+    logInjection: true,
+  })
 
-const appName = 'sold-service'
-tracer.use('http', { service: appName })
-tracer.use('mysql', { service: appName })
-tracer.use('dns', { service: appName })
-tracer.use('redis', { service: appName })
-tracer.use('http2', { service: appName })
+  const appName = 'sold-service'
+  tracer.use('http', { service: appName })
+  tracer.use('mysql', { service: appName })
+  tracer.use('dns', { service: appName })
+  tracer.use('redis', { service: appName })
+  tracer.use('http2', { service: appName })
+}
 
 import express from 'express'
 import { config } from 'process'
@@ -29,7 +31,7 @@ class Server {
   start() {
     this._configure()
 
-    const port = 8126
+    const port = process.env.NODE_ENV === 'local' ? 8126 : 80;
 
     this.app.listen(port, () => {
       console.log(`API Running at port: ${port}`)
