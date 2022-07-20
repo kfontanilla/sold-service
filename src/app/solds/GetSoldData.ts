@@ -87,8 +87,6 @@ class GetSoldData {
       let modificationTimestamp = ''
       // call provider interface to extract data from provider
       do {
-
-        console.log(importData)
         let soldData = await this.webAPIClient.getSolds(importData)
         // delay base on provider
 
