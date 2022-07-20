@@ -1,0 +1,53 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "host": "",
+    "version": "1.0.0",
+    "title": "Sold Service Api",
+    "description": "RESO Compliant extraction of webapi feeds for Sold Data"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "paths": {
+    "/solds/{LegacyImportId}": {
+      "get": {
+        "description": "Full Data Extraction of Solds",
+        "parameters": [
+          {
+            "name": "LegacyImportId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Web Api feed results"
+          }
+        }
+      }
+    },
+    "/importconfig/{LegacyImportId}": {
+      "get": {
+        "description": "Fetch Import Config",
+        "parameters": [
+          {
+            "name": "LegacyImportId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Database record found"
+          }
+        }
+      }
+    }
+  }
+}
