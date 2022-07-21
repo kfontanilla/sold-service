@@ -31,7 +31,7 @@ class Server {
   start() {
     this._configure()
 
-    const port = process.env.NODE_ENV === 'local' ? 8126 : 80;
+    const port = 8126;
 
     this.app.listen(port, () => {
       console.log(`API Running at port: ${port}`)
