@@ -9,6 +9,7 @@ const jsonPlaceHolderClient = require('src/interfaces/json-place-holder')
 const mlsGridClient = require('src/interfaces/mls-grid')
 const bridgeClient = require('src/interfaces/bridge')
 const webAPIClient = require('src/interfaces/base')
+const s3Clients = require('./infra/s3');
 import http from './infra/http'
 import { logger } from './infra/logger/Logger'
 import utilOperations from './utils'
@@ -37,6 +38,9 @@ container.registerClass(http)
 container.registerClass(utilOperations)
 
 container.registerClass(repositories)
+
+// S3
+container.registerClass(s3Clients);
 
 // Operation
 container.registerClass(soldsOperations)
