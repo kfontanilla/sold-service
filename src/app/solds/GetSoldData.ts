@@ -24,11 +24,12 @@ class GetSoldData {
 
   async execute(request: any, response: any) {
     const {
-      params: { LegacyImportId },
+      params: { ImportId },
     } = request
     try {
-      const importConfigData =
-        await this.importConfigRepository.getByLegacyImportId(LegacyImportId)
+      const importConfigData = await this.importConfigRepository.getById(
+        ImportId
+      )
 
       // Base on providerType - call the appropriate Interface
       // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
@@ -56,7 +57,7 @@ class GetSoldData {
       this.logger.error({
         message:
           'GET_SOLD_DATA_ERROR: Error while fetching sold data from data provider',
-        LegacyImportId,
+        ImportId,
         error,
       })
 
@@ -146,7 +147,10 @@ class GetSoldData {
           LastSuccessfulRun: new Date(),
           ServiceDetails: {
             nextLink: importData.nextLink,
-            modificationTimestamp: modificationTimestamp !== "" ? modificationTimestamp : importData.serviceDetail.ServiceDetails.modificationTimestamp,
+            modificationTimestamp:
+              modificationTimestamp !== ''
+                ? modificationTimestamp
+                : importData.serviceDetail.ServiceDetails.modificationTimestamp,
           },
         }
 
@@ -195,7 +199,7 @@ class GetSoldData {
         const soldDataServiceStats = await this.webAPIClient.getSolds(
           importData
         )
-          // missing implementation check if total count is updated
+        // missing implementation check if total count is updated
         await this.delay()
         serviceDetailData = {
           ImportConfigId: importData.Id,

@@ -12,12 +12,12 @@
     "https"
   ],
   "paths": {
-    "/solds/{LegacyImportId}": {
+    "/solds/full/{ImportId}": {
       "get": {
         "description": "Full Data Extraction of Solds",
         "parameters": [
           {
-            "name": "LegacyImportId",
+            "name": "ImportId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -30,12 +30,30 @@
         }
       }
     },
-    "/importconfig/{LegacyImportId}": {
+    "/solds/incremental/{ImportId}": {
+      "get": {
+        "description": "Incremental Data Extraction of Solds",
+        "parameters": [
+          {
+            "name": "ImportId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Web Api feed results"
+          }
+        }
+      }
+    },
+    "/solds/getimportconfig/{ImportId}": {
       "get": {
         "description": "Fetch Import Config",
         "parameters": [
           {
-            "name": "LegacyImportId",
+            "name": "ImportId",
             "in": "path",
             "required": true,
             "type": "string"
