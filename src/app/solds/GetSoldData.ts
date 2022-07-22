@@ -47,7 +47,7 @@ class GetSoldData {
         serviceStatsData.AvailableListingCount
 
       // process data
-      this.apiCall( newImportConfigData )
+      this.apiCall(newImportConfigData)
       // display current status of sold service run
       return this.responseFormatter.success(response, serviceStatsData)
     } catch (error: any) {
@@ -97,39 +97,43 @@ class GetSoldData {
         })
         await this.delay()
         queryUrl = soldData['@odata.nextLink']
+
+        finished = typeof queryUrl === 'undefined'
+        importData.nextLink = !finished ? queryUrl : importData.nextLink
+        queryUrl = !finished ? queryUrl : importData.nextLink
+
+        // process if there is data found
         if (typeof soldData.value[soldData.value.length - 1] !== 'undefined') {
           modificationTimestamp =
             soldData.value[soldData.value.length - 1].ModificationTimestamp
+
+          // iterate over soldData
+          const processedData = await this.processData({
+            importData: importData,
+            soldData: soldData,
+          })
+          currentImportCount += soldData.value.length
+
+          importData.serviceDetail = {
+            ImportConfigId: importData.Id,
+            AvailableListingCount: importData.AvailableListingCount,
+            ImportedListingCount: currentImportCount,
+            ImageDownLoaded: 0,
+            ServiceDetails: {
+              startLink: importData.nextLink,
+              nextLink: queryUrl,
+              modificationTimestamp: modificationTimestamp,
+            },
+          }
+
+          this.logger.info({
+            message: 'GET_SOLD_DATA_COUNTER',
+            currentImportCount,
+            finished,
+          })
+
+          await this.updateServiceStat(importData)
         }
-        finished = typeof queryUrl === 'undefined'
-        importData.nextLink = !finished ? queryUrl : importData.nextLink
-        // iterate over soldData
-        const processedData = await this.processData({
-          importData: importData,
-          soldData: soldData,
-        })
-
-        currentImportCount += soldData.value.length
-
-        importData.serviceDetail = {
-          ImportConfigId: importData.Id,
-          AvailableListingCount: importData.AvailableListingCount,
-          ImportedListingCount: currentImportCount,
-          ImageDownLoaded: 0,
-          ServiceDetails: {
-            startLink: importData.nextLink,
-            nextLink: queryUrl,
-            modificationTimestamp: modificationTimestamp,
-          },
-        }
-
-        this.logger.info({
-          message: 'GET_SOLD_DATA_COUNTER',
-          currentImportCount,
-          finished,
-        })
-
-        await this.updateServiceStat(importData)
       } while (!finished)
 
       if (finished) {
@@ -142,7 +146,7 @@ class GetSoldData {
           LastSuccessfulRun: new Date(),
           ServiceDetails: {
             nextLink: importData.nextLink,
-            modificationTimestamp: modificationTimestamp,
+            modificationTimestamp: modificationTimestamp !== "" ? modificationTimestamp : importData.serviceDetail.ServiceDetails.modificationTimestamp,
           },
         }
 
@@ -191,7 +195,7 @@ class GetSoldData {
         const soldDataServiceStats = await this.webAPIClient.getSolds(
           importData
         )
-
+          // missing implementation check if total count is updated
         await this.delay()
         serviceDetailData = {
           ImportConfigId: importData.Id,
@@ -263,7 +267,6 @@ class GetSoldData {
       importConfigImportedListingCount = serviceStatsImportedListingCount
       importConfigData.serviceDetail = serviceStatsData
       importConfigData.ModificationTimestamp = importConfigModificationTimestamp
-      
     }
     importConfigData.ImportedListingCount = importConfigImportedListingCount
     importConfigData.nextLink = importConfigNextLink
