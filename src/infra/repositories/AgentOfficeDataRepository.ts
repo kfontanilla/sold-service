@@ -1,8 +1,8 @@
 import { BaseRDSRepository } from './base/BaseRDSRepository'
 
 class AgentOfficeDataRepository extends BaseRDSRepository {
-  constructor({ AgentOfficeDatumModel }: any) {
-    super(AgentOfficeDatumModel)
+  constructor({ AgentOfficeDataModel }: any) {
+    super(AgentOfficeDataModel)
   }
 
   async setAgentOfficeData(ListingData: any) {
