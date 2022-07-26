@@ -29,7 +29,7 @@ class ServiceStatRepository extends BaseRDSRepository {
     try {
       const options = {
         where: { ImportConfigId: importData.Id },
-        order: [['LastScheduledRun', 'DESC']],
+        order: [['LastSuccessfulRun', 'DESC'], ['LastScheduledRun', 'DESC']],
       }
       const serviceStatsRecord = await this.getOne(options)
       return serviceStatsRecord

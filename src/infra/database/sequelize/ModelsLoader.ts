@@ -1,12 +1,11 @@
 // const fs = require('fs');
 import fs from 'fs';
 const path = require('path');
-const inflection = require('inflection');
 const { DataTypes } = require('sequelize');
 
-const singularizeToUpper = (str: string) => {
-  return inflection.singularize(str.replace(/^./, f => f.toUpperCase()));
-};
+const capitalizeFirstLetter = (string: string) => {
+  return string[0].toUpperCase() + string.slice(1)
+}
 
 module.exports = {
   load({ sequelize, baseFolder }: any) {
@@ -25,7 +24,7 @@ module.exports = {
       })
       .forEach((file: any) => {
         const model = require(path.join(baseFolder, file));
-        const modelName = `${singularizeToUpper(file.split('.')[0])}Model`;
+        const modelName = `${capitalizeFirstLetter(file.split('.')[0])}Model`;
         loaded.models[modelName] = model(sequelize, DataTypes);
       });
 

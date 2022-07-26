@@ -1,4 +1,4 @@
-import { exit } from "process"
+import { exit } from 'process'
 
 class SetListingData {
   [property: string]: any
@@ -45,18 +45,25 @@ class SetListingData {
       //   processedListingData
       // )
       await this.locationDataRepository.setLocationData(processedListingData)
-      const PropertyDataResult = await this.propertyDataRepository.setPropertyData(processedListingData)
+      const PropertyDataResult =
+        await this.propertyDataRepository.setPropertyData(processedListingData)
 
       // mapped insert PropertyData
-      const processedPropertyData = await this.mappedPropertyDataId(PropertyDataResult, processedListingData)
+      const processedPropertyData = await this.mappedPropertyDataId(
+        PropertyDataResult,
+        processedListingData
+      )
 
-      await this.propertyDetailRepository.setPropertyDetail(processedPropertyData)
-  
-      // this.logger.info({
-      //   message: 'SET_ListingDataResult_SUCCESS',
-      //   ImportConfigId,
-      //   processedListingData,
-      // })
+      await this.propertyDetailRepository.setPropertyDetail(
+        processedPropertyData
+      )
+
+      this.logger.info({
+        message: 'SET_ListingDataResult_SUCCESS',
+        ImportConfigId,
+        ListingInserted: ListingDataResult.length,
+      })
+      
       return ListingDataResult
     } catch (error: any) {
       const errDetails = {

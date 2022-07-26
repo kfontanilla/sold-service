@@ -1,8 +1,8 @@
 import { BaseRDSRepository } from './base/BaseRDSRepository'
 
 class PropertyDataRepository extends BaseRDSRepository {
-  constructor({ PropertyDatumModel }: any) {
-    super(PropertyDatumModel)
+  constructor({ PropertyDataModel }: any) {
+    super(PropertyDataModel)
   }
 
   async setPropertyData(ListingData: any) {

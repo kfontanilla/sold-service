@@ -1,8 +1,8 @@
 import { BaseRDSRepository } from './base/BaseRDSRepository'
 
 class LocationDataRepository extends BaseRDSRepository {
-  constructor({ LocationDatumModel }: any) {
-    super(LocationDatumModel)
+  constructor({ LocationDataModel }: any) {
+    super(LocationDataModel)
   }
 
   async setLocationData(ListingData: any) {

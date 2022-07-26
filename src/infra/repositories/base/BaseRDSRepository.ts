@@ -33,8 +33,8 @@ export class BaseRDSRepository {
    *
    * @return {Promise<object|null>} Will return the first matching entry, or null if not found
    */
-  async getById(id: number): Promise<object | null> {
-    return this.getOne({ where: { id } })
+  async getById(Id: number): Promise<object | null> {
+    return this.getOne({ where: { Id } })
   }
 
   async save(doc: any) {
