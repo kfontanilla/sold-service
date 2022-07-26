@@ -11,6 +11,7 @@ class GetSoldData {
     responseFormatter,
     importConfigRepository,
     SetListingData,
+    SetListingMedia,
     logger,
     serviceStatRepository,
   }: any) {
@@ -18,6 +19,7 @@ class GetSoldData {
     this.responseFormatter = responseFormatter
     this.importConfigRepository = importConfigRepository
     this.setListingData = SetListingData
+    this.setListingMedia = SetListingMedia
     this.logger = logger
     this.serviceStatRepository = serviceStatRepository
   }
@@ -174,13 +176,30 @@ class GetSoldData {
   async processData(result: any) {
     const { importData, soldData } = result
     const preProcessedData = []
+    const preProcessedMediaData = []
 
     for (const key in soldData.value) {
       const listingData = soldData.value[key]
       listingData.ImportConfigId = importData.Id
+      if (listingData.Media) {
+        const listingMediaData = listingData.Media.map((item: any) => {
+          item.ListingKey = listingData.ListingKey
+          return item
+        })
+        preProcessedMediaData.push(listingMediaData)
+      }
       preProcessedData.push(listingData)
     }
-    await this.setListingData.set(importData.Id, preProcessedData)
+
+    const listingCount = await this.setListingData.set(
+      importData.Id,
+      preProcessedData
+    )
+    const mediaCount = await this.setListingMedia.set(
+      importData.Id,
+      preProcessedMediaData
+    )
+    
   }
 
   /**

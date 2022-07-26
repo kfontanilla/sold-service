@@ -12,27 +12,9 @@
     "https"
   ],
   "paths": {
-    "/solds/full/{ImportId}": {
+    "/solds/extractfull/{ImportId}": {
       "get": {
         "description": "Full Data Extraction of Solds",
-        "parameters": [
-          {
-            "name": "ImportId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Web Api feed results"
-          }
-        }
-      }
-    },
-    "/solds/incremental/{ImportId}": {
-      "get": {
-        "description": "Incremental Data Extraction of Solds",
         "parameters": [
           {
             "name": "ImportId",

@@ -229,7 +229,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       sequelize,
       underscored: false,
       timestamps: false,
-      tableName: 'listing_data',
+      tableName: 'listing_media',
     }
   )
   return ListingMedia
