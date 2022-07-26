@@ -25,7 +25,6 @@ module.exports = {
       .forEach((file: any) => {
         const model = require(path.join(baseFolder, file));
         const modelName = `${capitalizeFirstLetter(file.split('.')[0])}Model`;
-        console.log(modelName)
         loaded.models[modelName] = model(sequelize, DataTypes);
       });
 
