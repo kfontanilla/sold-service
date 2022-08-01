@@ -24,7 +24,7 @@ class SetListingMedia {
         proccessedImageData
       )
       this.logger.info({
-        message: 'SET_ListingDataResult_SUCCESS',
+        message: 'SET_ListingMediaResult_SUCCESS',
         ImportConfigId,
         MediaUploaded: dbData.length,
       })

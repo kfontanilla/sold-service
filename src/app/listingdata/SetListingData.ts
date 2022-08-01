@@ -1,3 +1,4 @@
+import e from 'express'
 import { exit } from 'process'
 
 class SetListingData {
@@ -26,7 +27,7 @@ class SetListingData {
     try {
       const processedListingDataGroup =
         await this.payloadHelper.generateSoldsJsonDataTypePayload(ListingData)
-      const ListingDataResult = await this.listingDataRepository.insertMany(
+      const ListingDataResult = await this.listingDataRepository.setListingData(
         processedListingDataGroup
       )
 
@@ -63,7 +64,7 @@ class SetListingData {
         ImportConfigId,
         ListingInserted: ListingDataResult.length,
       })
-      
+
       return ListingDataResult
     } catch (error: any) {
       const errDetails = {
@@ -86,14 +87,23 @@ class SetListingData {
    *
    * @returns {Object} Will return the mapped listing data id.
    */
-  mappedListingDataId(ListingDataResult: any, ListingData: any): object {
-    return ListingData.map((item: any) => {
-      const found = ListingDataResult.find(
-        (row: any) => item.ListingKey === row.ListingKey
-      )
-      item.ListingDataId = found.Id
-      return item
-    })
+  async mappedListingDataId(ListingDataResult: any, ListingData: any) {
+    return await Promise.all(
+      ListingData.map(async (item: any) => {
+        const found = ListingDataResult.find(
+          (row: any) => item.ListingKey === row.ListingKey
+        )
+        item.ListingDataId = found.Id
+        if (item.ListingDataId == null) {
+          // if Duplicate
+          const record = await this.listingDataRepository.getOne({
+            where: { ListingKey: item.ListingKey },
+          })
+          item.ListingDataId = record.Id
+        }
+        return item
+      })
+    )
   }
 
   /**

@@ -68,9 +68,9 @@ export class BaseRDSRepository {
    * @return {Promise<object|null>} Will return the query result.
    */
 
-  async upsert(dataSet: object[]): Promise<object | null> {
+  async upsert(dataSet: object[], optionsField: object): Promise<object | null> {
     try {
-      return await this.model.upsert(dataSet)
+      return await this.model.bulkCreate(dataSet, optionsField)
     } catch (error) {
       throw error
     }
