@@ -39,7 +39,7 @@ class ListingDataRepository extends BaseRDSRepository {
 
   async setListingData(ListingData: any) {
     try {
-      const  onDuplicate = {
+      const onDuplicate = {
         updateOnDuplicate: this.listUpdateFields,
       }
       return await this.upsert(ListingData, onDuplicate)
