@@ -45,6 +45,7 @@ class SetListingData {
       // await this.listingTransactionRepository.setListingTransaction(
       //   processedListingData
       // )
+      
       await this.locationDataRepository.setLocationData(processedListingData)
       const PropertyDataResult =
         await this.propertyDataRepository.setPropertyData(processedListingData)
@@ -87,7 +88,7 @@ class SetListingData {
    *
    * @returns {Object} Will return the mapped listing data id.
    */
-  async mappedListingDataId(ListingDataResult: any, ListingData: any) {
+  async mappedListingDataId(ListingDataResult: any, ListingData: any): Promise<object> {
     return await Promise.all(
       ListingData.map(async (item: any) => {
         const found = ListingDataResult.find(
@@ -113,14 +114,24 @@ class SetListingData {
    *
    * @returns {Object} Will return the mapped listing data id.
    */
-  mappedPropertyDataId(ListingDataResult: any, ListingData: any): object {
-    return ListingData.map((item: any) => {
-      const found = ListingDataResult.find(
-        (row: any) => item.ListingKey === row.ListingKey
-      )
-      item.PropertyDataId = found.Id
-      return item
-    })
+  async mappedPropertyDataId(ListingDataResult: any, ListingData: any): Promise<object> {
+    return await Promise.all(
+      ListingData.map(async (item: any) => {
+        const found = ListingDataResult.find(
+          (row: any) => item.ListingKey === row.ListingKey
+        )
+        item.PropertyDataId = found.Id
+        if (item.ListingDataId == null) {
+          // if Duplicate
+          const record = await this.propertyDataRepository.getOne({
+            where: { ListingKey: item.ListingKey },
+          })
+          item.PropertyDataId = record.Id
+        }
+
+        return item
+      })
+    )
   }
 }
 

@@ -26,7 +26,7 @@ class LocationDataRepository extends BaseRDSRepository {
   async setLocationData(ListingData: any) {
     try {
 
-      const  onDuplicate = {
+      const onDuplicate = {
         updateOnDuplicate: this.listUpdateFields,
       }
 

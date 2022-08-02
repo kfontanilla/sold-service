@@ -176,18 +176,19 @@ class GetSoldData {
   async processData(result: any) {
     const { importData, soldData } = result
     const preProcessedData = []
-    const preProcessedMediaData = []
+    // const preProcessedMediaData = []
 
     for (const key in soldData.value) {
       const listingData = soldData.value[key]
       listingData.ImportConfigId = importData.Id
-      if (listingData.Media) {
-        const listingMediaData = listingData.Media.map((item: any) => {
-          item.ListingKey = listingData.ListingKey
-          return item
-        })
-        preProcessedMediaData.push(listingMediaData)
-      }
+      // removed downloading of Media 
+      // if (listingData.Media) {
+      //   const listingMediaData = listingData.Media.map((item: any) => {
+      //     item.ListingKey = listingData.ListingKey
+      //     return item
+      //   })
+      //   preProcessedMediaData.push(listingMediaData)
+      // }
       preProcessedData.push(listingData)
     }
 
@@ -195,10 +196,10 @@ class GetSoldData {
       importData.Id,
       preProcessedData
     )
-    const mediaCount = await this.setListingMedia.set(
-      importData.Id,
-      preProcessedMediaData
-    )
+    // const mediaCount = await this.setListingMedia.set(
+    //   importData.Id,
+    //   preProcessedMediaData
+    // )
     
   }
 
