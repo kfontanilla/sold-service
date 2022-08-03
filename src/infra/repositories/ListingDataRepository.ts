@@ -42,7 +42,7 @@ class ListingDataRepository extends BaseRDSRepository {
       const onDuplicate = {
         updateOnDuplicate: this.listUpdateFields,
       }
-      return await this.upsert(ListingData, onDuplicate)
+      return await this.upsertMany(ListingData, onDuplicate)
     } catch (error) {
       throw error
     }

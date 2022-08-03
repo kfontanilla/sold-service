@@ -61,6 +61,21 @@ export class BaseRDSRepository {
     }
   }
 
+    /**
+   * Insert or Update data into table
+   * @param {object[]} dataSet The data set that will be inserted to table
+   * 
+   * @return {Promise<object|null>} Will return the query result.
+   */
+
+     async upsert(dataSet: any): Promise<object | null> {
+      try {
+        return await this.model.upsert(dataSet)
+      } catch (error) {
+        throw error
+      }
+    }
+
   /**
    * Insert or Update data into table
    * @param {object[]} dataSet The data set that will be inserted to table
@@ -68,7 +83,7 @@ export class BaseRDSRepository {
    * @return {Promise<object|null>} Will return the query result.
    */
 
-  async upsert(dataSet: object[], optionsField: object): Promise<object | null> {
+  async upsertMany(dataSet: object[], optionsField: object): Promise<object | null> {
     try {
       return await this.model.bulkCreate(dataSet, optionsField)
     } catch (error) {

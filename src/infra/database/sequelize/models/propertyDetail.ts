@@ -14,11 +14,13 @@ module.exports = (sequelize: any, DataTypes: any) => {
       PropertyDataId: {
         type: DataTypes.BIGINT,
         field: 'PropertyDataId',
+        unique: true,
         allowNull: false,
       },
       ListingKey: {
         type: DataTypes.STRING(128),
         field: 'ListingKey',
+        unique: true,
         allowNull: false,
       },
       BusinessGroup: {

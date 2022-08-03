@@ -14,6 +14,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       ImportConfigId: {
         type: DataTypes.BIGINT,
         field: 'ImportConfigId',
+        unique: true,
         allowNull: false,
       },
       DisplayAsSold: {
@@ -25,6 +26,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       ListingKey: {
         type: DataTypes.STRING(128),
         field: 'ListingKey',
+        unique: true,
         allowNull: false,
       },
       ListingKeyNumeric: {
@@ -187,3 +189,4 @@ module.exports = (sequelize: any, DataTypes: any) => {
   )
   return ListingData
 }
+

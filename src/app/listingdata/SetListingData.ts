@@ -121,7 +121,7 @@ class SetListingData {
           (row: any) => item.ListingKey === row.ListingKey
         )
         item.PropertyDataId = found.Id
-        if (item.ListingDataId == null) {
+        if (item.PropertyDataId == null) {
           // if Duplicate
           const record = await this.propertyDataRepository.getOne({
             where: { ListingKey: item.ListingKey },

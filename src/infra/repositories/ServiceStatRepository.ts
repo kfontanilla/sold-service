@@ -11,7 +11,7 @@ class ServiceStatRepository extends BaseRDSRepository {
 
   async setServiceStat(ServiceDetail: ServiceDetail) {
     try {
-      return await this.save(ServiceDetail)
+      return await this.upsert(ServiceDetail)
     } catch (error) {
       throw error
     }

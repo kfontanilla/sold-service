@@ -200,7 +200,7 @@ class GetSoldData {
     //   importData.Id,
     //   preProcessedMediaData
     // )
-    
+    return listingCount
   }
 
   /**
