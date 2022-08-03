@@ -1,4 +1,3 @@
-import e from 'express'
 import { ImportConfig } from '../../domain/ImportConfig'
 import { ServiceDetail } from '../../domain/ServiceDetail'
 

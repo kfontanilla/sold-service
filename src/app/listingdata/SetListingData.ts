@@ -1,6 +1,3 @@
-import e from 'express'
-import { exit } from 'process'
-
 class SetListingData {
   [property: string]: any
   constructor({
