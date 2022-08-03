@@ -1,5 +1,3 @@
-import { exit } from "process"
-
 class SetListingData {
   [property: string]: any
   constructor({
@@ -26,7 +24,7 @@ class SetListingData {
     try {
       const processedListingDataGroup =
         await this.payloadHelper.generateSoldsJsonDataTypePayload(ListingData)
-      const ListingDataResult = await this.listingDataRepository.insertMany(
+      const ListingDataResult = await this.listingDataRepository.setListingData(
         processedListingDataGroup
       )
 
@@ -44,19 +42,27 @@ class SetListingData {
       // await this.listingTransactionRepository.setListingTransaction(
       //   processedListingData
       // )
+      
       await this.locationDataRepository.setLocationData(processedListingData)
-      const PropertyDataResult = await this.propertyDataRepository.setPropertyData(processedListingData)
+      const PropertyDataResult =
+        await this.propertyDataRepository.setPropertyData(processedListingData)
 
       // mapped insert PropertyData
-      const processedPropertyData = await this.mappedPropertyDataId(PropertyDataResult, processedListingData)
+      const processedPropertyData = await this.mappedPropertyDataId(
+        PropertyDataResult,
+        processedListingData
+      )
 
-      await this.propertyDetailRepository.setPropertyDetail(processedPropertyData)
-  
-      // this.logger.info({
-      //   message: 'SET_ListingDataResult_SUCCESS',
-      //   ImportConfigId,
-      //   processedListingData,
-      // })
+      await this.propertyDetailRepository.setPropertyDetail(
+        processedPropertyData
+      )
+
+      this.logger.info({
+        message: 'SET_ListingDataResult_SUCCESS',
+        ImportConfigId,
+        ListingInserted: ListingDataResult.length,
+      })
+
       return ListingDataResult
     } catch (error: any) {
       const errDetails = {
@@ -79,14 +85,23 @@ class SetListingData {
    *
    * @returns {Object} Will return the mapped listing data id.
    */
-  mappedListingDataId(ListingDataResult: any, ListingData: any): object {
-    return ListingData.map((item: any) => {
-      const found = ListingDataResult.find(
-        (row: any) => item.ListingKey === row.ListingKey
-      )
-      item.ListingDataId = found.Id
-      return item
-    })
+  async mappedListingDataId(ListingDataResult: any, ListingData: any): Promise<object> {
+    return await Promise.all(
+      ListingData.map(async (item: any) => {
+        const found = ListingDataResult.find(
+          (row: any) => item.ListingKey === row.ListingKey
+        )
+        item.ListingDataId = found.Id
+        if (item.ListingDataId == null) {
+          // if Duplicate
+          const record = await this.listingDataRepository.getOne({
+            where: { ListingKey: item.ListingKey },
+          })
+          item.ListingDataId = record.Id
+        }
+        return item
+      })
+    )
   }
 
   /**
@@ -96,14 +111,24 @@ class SetListingData {
    *
    * @returns {Object} Will return the mapped listing data id.
    */
-  mappedPropertyDataId(ListingDataResult: any, ListingData: any): object {
-    return ListingData.map((item: any) => {
-      const found = ListingDataResult.find(
-        (row: any) => item.ListingKey === row.ListingKey
-      )
-      item.PropertyDataId = found.Id
-      return item
-    })
+  async mappedPropertyDataId(ListingDataResult: any, ListingData: any): Promise<object> {
+    return await Promise.all(
+      ListingData.map(async (item: any) => {
+        const found = ListingDataResult.find(
+          (row: any) => item.ListingKey === row.ListingKey
+        )
+        item.PropertyDataId = found.Id
+        if (item.PropertyDataId == null) {
+          // if Duplicate
+          const record = await this.propertyDataRepository.getOne({
+            where: { ListingKey: item.ListingKey },
+          })
+          item.PropertyDataId = record.Id
+        }
+
+        return item
+      })
+    )
   }
 }
 

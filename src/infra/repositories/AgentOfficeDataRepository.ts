@@ -1,13 +1,43 @@
 import { BaseRDSRepository } from './base/BaseRDSRepository'
 
 class AgentOfficeDataRepository extends BaseRDSRepository {
-  constructor({ AgentOfficeDatumModel }: any) {
-    super(AgentOfficeDatumModel)
+  public listUpdateFields = [
+    'BuyerAgentKey',
+    'BuyerAgentMlsId',
+    'BuyerAgentFullName',
+    'BuyerOfficeKey',
+    'BuyerOfficeMlsId',
+    'BuyerOfficeName',
+    'CoBuyerAgentKey',
+    'CoBuyerAgentMlsId',
+    'CoBuyerAgentFullName',
+    'CoBuyerOfficeKey',
+    'CoBuyerOfficeName',
+    'ListAgentKey',
+    'ListAgentMlsId',
+    'ListAgentFullName',
+    'ListOfficeKey',
+    'ListOfficeMlsId',
+    'ListOfficeName',
+    'CoListAgentKey',
+    'CoListAgentMlsId',
+    'CoListAgentFullName',
+    'CoListOfficeKey',
+    'CoListOfficeMlsId',
+    'CoListOfficeName',
+  ]
+  constructor({ AgentOfficeDataModel }: any) {
+    super(AgentOfficeDataModel)
   }
 
   async setAgentOfficeData(ListingData: any) {
     try {
-      return await this.insertMany(ListingData)
+
+      const onDuplicate = {
+        updateOnDuplicate: this.listUpdateFields,
+      }
+      return await this.upsertMany(ListingData, onDuplicate)
+
     } catch (error) {
       throw error
     }

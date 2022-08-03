@@ -12,12 +12,12 @@
     "https"
   ],
   "paths": {
-    "/solds/{LegacyImportId}": {
+    "/solds/extractfull/{ImportId}": {
       "get": {
         "description": "Full Data Extraction of Solds",
         "parameters": [
           {
-            "name": "LegacyImportId",
+            "name": "ImportId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -30,12 +30,12 @@
         }
       }
     },
-    "/importconfig/{LegacyImportId}": {
+    "/solds/getimportconfig/{ImportId}": {
       "get": {
         "description": "Fetch Import Config",
         "parameters": [
           {
-            "name": "LegacyImportId",
+            "name": "ImportId",
             "in": "path",
             "required": true,
             "type": "string"

@@ -33,4 +33,5 @@ export const datesGroupFields = [
   'PurchaseContractDate',
   'SimpleDaysOnMarket',
   'StatusChangeTimestamp',
+  'WithdrawnDate',
 ] as const

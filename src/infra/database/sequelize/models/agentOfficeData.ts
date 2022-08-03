@@ -19,6 +19,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       ListingKey: {
         type: DataTypes.STRING(128),
         field: 'ListingKey',
+        unique: true,
         allowNull: false,
       },
       BuyerAgentKey: {

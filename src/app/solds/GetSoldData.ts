@@ -1,4 +1,3 @@
-import e from 'express'
 import { ImportConfig } from '../../domain/ImportConfig'
 import { ServiceDetail } from '../../domain/ServiceDetail'
 
@@ -11,6 +10,7 @@ class GetSoldData {
     responseFormatter,
     importConfigRepository,
     SetListingData,
+    SetListingMedia,
     logger,
     serviceStatRepository,
   }: any) {
@@ -18,17 +18,19 @@ class GetSoldData {
     this.responseFormatter = responseFormatter
     this.importConfigRepository = importConfigRepository
     this.setListingData = SetListingData
+    this.setListingMedia = SetListingMedia
     this.logger = logger
     this.serviceStatRepository = serviceStatRepository
   }
 
   async execute(request: any, response: any) {
     const {
-      params: { LegacyImportId },
+      params: { ImportId },
     } = request
     try {
-      const importConfigData =
-        await this.importConfigRepository.getByLegacyImportId(LegacyImportId)
+      const importConfigData = await this.importConfigRepository.getById(
+        ImportId
+      )
 
       // Base on providerType - call the appropriate Interface
       // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
@@ -47,7 +49,7 @@ class GetSoldData {
         serviceStatsData.AvailableListingCount
 
       // process data
-      this.apiCall( newImportConfigData )
+      this.apiCall(newImportConfigData)
       // display current status of sold service run
       return this.responseFormatter.success(response, serviceStatsData)
     } catch (error: any) {
@@ -56,7 +58,7 @@ class GetSoldData {
       this.logger.error({
         message:
           'GET_SOLD_DATA_ERROR: Error while fetching sold data from data provider',
-        LegacyImportId,
+        ImportId,
         error,
       })
 
@@ -97,39 +99,43 @@ class GetSoldData {
         })
         await this.delay()
         queryUrl = soldData['@odata.nextLink']
+
+        finished = typeof queryUrl === 'undefined'
+        importData.nextLink = !finished ? queryUrl : importData.nextLink
+        queryUrl = !finished ? queryUrl : importData.nextLink
+
+        // process if there is data found
         if (typeof soldData.value[soldData.value.length - 1] !== 'undefined') {
           modificationTimestamp =
             soldData.value[soldData.value.length - 1].ModificationTimestamp
+
+          // iterate over soldData
+          const processedData = await this.processData({
+            importData: importData,
+            soldData: soldData,
+          })
+          currentImportCount += soldData.value.length
+
+          importData.serviceDetail = {
+            ImportConfigId: importData.Id,
+            AvailableListingCount: importData.AvailableListingCount,
+            ImportedListingCount: currentImportCount,
+            ImageDownLoaded: 0,
+            ServiceDetails: {
+              startLink: importData.nextLink,
+              nextLink: queryUrl,
+              modificationTimestamp: modificationTimestamp,
+            },
+          }
+
+          this.logger.info({
+            message: 'GET_SOLD_DATA_COUNTER',
+            currentImportCount,
+            finished,
+          })
+
+          await this.updateServiceStat(importData)
         }
-        finished = typeof queryUrl === 'undefined'
-        importData.nextLink = !finished ? queryUrl : importData.nextLink
-        // iterate over soldData
-        const processedData = await this.processData({
-          importData: importData,
-          soldData: soldData,
-        })
-
-        currentImportCount += soldData.value.length
-
-        importData.serviceDetail = {
-          ImportConfigId: importData.Id,
-          AvailableListingCount: importData.AvailableListingCount,
-          ImportedListingCount: currentImportCount,
-          ImageDownLoaded: 0,
-          ServiceDetails: {
-            startLink: importData.nextLink,
-            nextLink: queryUrl,
-            modificationTimestamp: modificationTimestamp,
-          },
-        }
-
-        this.logger.info({
-          message: 'GET_SOLD_DATA_COUNTER',
-          currentImportCount,
-          finished,
-        })
-
-        await this.updateServiceStat(importData)
       } while (!finished)
 
       if (finished) {
@@ -142,7 +148,10 @@ class GetSoldData {
           LastSuccessfulRun: new Date(),
           ServiceDetails: {
             nextLink: importData.nextLink,
-            modificationTimestamp: modificationTimestamp,
+            modificationTimestamp:
+              modificationTimestamp !== ''
+                ? modificationTimestamp
+                : importData.serviceDetail.ServiceDetails.modificationTimestamp,
           },
         }
 
@@ -166,13 +175,31 @@ class GetSoldData {
   async processData(result: any) {
     const { importData, soldData } = result
     const preProcessedData = []
+    // const preProcessedMediaData = []
 
     for (const key in soldData.value) {
       const listingData = soldData.value[key]
       listingData.ImportConfigId = importData.Id
+      // removed downloading of Media 
+      // if (listingData.Media) {
+      //   const listingMediaData = listingData.Media.map((item: any) => {
+      //     item.ListingKey = listingData.ListingKey
+      //     return item
+      //   })
+      //   preProcessedMediaData.push(listingMediaData)
+      // }
       preProcessedData.push(listingData)
     }
-    await this.setListingData.set(importData.Id, preProcessedData)
+
+    const listingCount = await this.setListingData.set(
+      importData.Id,
+      preProcessedData
+    )
+    // const mediaCount = await this.setListingMedia.set(
+    //   importData.Id,
+    //   preProcessedMediaData
+    // )
+    return listingCount
   }
 
   /**
@@ -191,7 +218,7 @@ class GetSoldData {
         const soldDataServiceStats = await this.webAPIClient.getSolds(
           importData
         )
-
+        // missing implementation check if total count is updated
         await this.delay()
         serviceDetailData = {
           ImportConfigId: importData.Id,
@@ -263,7 +290,6 @@ class GetSoldData {
       importConfigImportedListingCount = serviceStatsImportedListingCount
       importConfigData.serviceDetail = serviceStatsData
       importConfigData.ModificationTimestamp = importConfigModificationTimestamp
-      
     }
     importConfigData.ImportedListingCount = importConfigImportedListingCount
     importConfigData.nextLink = importConfigNextLink

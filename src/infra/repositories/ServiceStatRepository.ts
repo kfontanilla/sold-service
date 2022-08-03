@@ -11,7 +11,7 @@ class ServiceStatRepository extends BaseRDSRepository {
 
   async setServiceStat(ServiceDetail: ServiceDetail) {
     try {
-      return await this.save(ServiceDetail)
+      return await this.upsert(ServiceDetail)
     } catch (error) {
       throw error
     }
@@ -29,7 +29,7 @@ class ServiceStatRepository extends BaseRDSRepository {
     try {
       const options = {
         where: { ImportConfigId: importData.Id },
-        order: [['LastScheduledRun', 'DESC']],
+        order: [['LastSuccessfulRun', 'DESC'], ['LastScheduledRun', 'DESC']],
       }
       const serviceStatsRecord = await this.getOne(options)
       return serviceStatsRecord

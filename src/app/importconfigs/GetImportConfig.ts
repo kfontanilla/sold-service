@@ -8,45 +8,45 @@ class GetImportConfig {
 
   async execute(req: any, res: any) {
     const {
-      params: { LegacyImportId },
+      params: { ImportId },
     } = req
     try {
       const importConfig =
-        await this.importConfigRepository.getByLegacyImportId(LegacyImportId)
+        await this.importConfigRepository.getById(ImportId)
 
       this.logger.info({
-        message: 'Success fetch import config by Legacy import Id',
+        message: 'Success fetch import config by Import Id',
         importConfig,
-        LegacyImportId,
+        ImportId,
       })
 
       return this.responseFormatter.success(res, importConfig)
     } catch (error) {
       this.logger.error({
-        message: 'Error while fetching import config by Legacy Import Id',
+        message: 'Error while fetching import config by Import Id',
         error,
-        LegacyImportId,
+        ImportId,
       })
     }
   }
 
-  async get(LegacyImportId: any) {
+  async get(ImportId: any) {
     try {
       const importConfig =
-        await this.importConfigRepository.getByLegacyImportId(LegacyImportId)
+        await this.importConfigRepository.getById(ImportId)
 
       // this.logger.info({
       //   message: 'Success fetch import config by Legacy import Id',
       //   importConfig,
-      //   LegacyImportId,
+      //   ImportId,
       // })
 
       return importConfig
     } catch (error) {
       this.logger.error({
-        message: 'Error while fetching import config by Legacy Import Id',
+        message: 'Error while fetching import config by Import Id',
         error,
-        LegacyImportId,
+        ImportId,
       })
     }
   }

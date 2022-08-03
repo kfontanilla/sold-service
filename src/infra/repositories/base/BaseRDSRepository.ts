@@ -33,8 +33,8 @@ export class BaseRDSRepository {
    *
    * @return {Promise<object|null>} Will return the first matching entry, or null if not found
    */
-  async getById(id: number): Promise<object | null> {
-    return this.getOne({ where: { id } })
+  async getById(Id: number): Promise<object | null> {
+    return this.getOne({ where: { Id } })
   }
 
   async save(doc: any) {
@@ -61,6 +61,21 @@ export class BaseRDSRepository {
     }
   }
 
+    /**
+   * Insert or Update data into table
+   * @param {object[]} dataSet The data set that will be inserted to table
+   * 
+   * @return {Promise<object|null>} Will return the query result.
+   */
+
+     async upsert(dataSet: any): Promise<object | null> {
+      try {
+        return await this.model.upsert(dataSet)
+      } catch (error) {
+        throw error
+      }
+    }
+
   /**
    * Insert or Update data into table
    * @param {object[]} dataSet The data set that will be inserted to table
@@ -68,9 +83,9 @@ export class BaseRDSRepository {
    * @return {Promise<object|null>} Will return the query result.
    */
 
-  async upsert(dataSet: object[]): Promise<object | null> {
+  async upsertMany(dataSet: object[], optionsField: object): Promise<object | null> {
     try {
-      return await this.model.upsert(dataSet)
+      return await this.model.bulkCreate(dataSet, optionsField)
     } catch (error) {
       throw error
     }

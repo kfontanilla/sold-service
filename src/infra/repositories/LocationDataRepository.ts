@@ -1,13 +1,36 @@
 import { BaseRDSRepository } from './base/BaseRDSRepository'
 
 class LocationDataRepository extends BaseRDSRepository {
-  constructor({ LocationDatumModel }: any) {
-    super(LocationDatumModel)
+  public listUpdateFields = [
+    'Latitude',
+    'Longitude',
+    'UnitNumber',
+    'StreetName',
+    'StreetNumber',
+    'StreetAdditionalInfo',
+    'City',
+    'CountyOrParish',
+    'Township',
+    'StateOrProvince',
+    'PostalCode',
+    'PostalCodePlus4',
+    'Country',
+    'UnparsedAddress',
+    'SchoolGroup',
+    'AreaGroup',]
+
+  constructor({ LocationDataModel }: any) {
+    super(LocationDataModel)
   }
 
   async setLocationData(ListingData: any) {
     try {
-      return await this.insertMany(ListingData)
+
+      const onDuplicate = {
+        updateOnDuplicate: this.listUpdateFields,
+      }
+
+      return await this.upsertMany(ListingData, onDuplicate)
     } catch (error) {
       throw error
     }
