@@ -55,7 +55,6 @@ class GetSoldData {
         serviceStatsData
       )
 
-      console.log(newImportConfigData)
       if (!serviceStatsData) {
         serviceStatsData = await this.updateServiceStat(newImportConfigData)
       }
@@ -301,7 +300,7 @@ class GetSoldData {
           }
         }
       }
-      await this.serviceStatRepository.setServiceStat(serviceDetailData)
+      serviceDetailData = await this.serviceStatRepository.setServiceStat(serviceDetailData)
     } catch (error: any) {
       const errMessage = error.name
       this.logger.error({
