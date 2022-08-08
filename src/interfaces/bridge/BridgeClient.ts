@@ -29,26 +29,24 @@ class BridgeClient {
   buildQueryUrl(ImportConfig: ImportConfig) {
     try {
       if (ImportConfig.AdditionalConfig.sold) {
-
         const addedResource = ImportConfig.AdditionalConfig.sold.addedResource
-        ? '/' + ImportConfig.AdditionalConfig.sold.addedResource
-        : ''
-
+          ? '/' + ImportConfig.AdditionalConfig.sold.addedResource
+          : ''
         if (
           ImportConfig.extractionType &&
           ImportConfig.extractionType === 'extractincremental'
         ) {
-
           let dataSearchQuery = new Date()
-          console.log(ImportConfig.serviceDetail)
-          if(ImportConfig.ModificationTimestamp){
-            dataSearchQuery = new Date(Date.parse(ImportConfig.ModificationTimestamp))
+          if (ImportConfig.ModificationTimestamp) {
+            dataSearchQuery = new Date(
+              Date.parse(ImportConfig.ModificationTimestamp)
+            )
           }
-          // const dateOnly = new Date(dataSearchQuery)
-          console.log(dataSearchQuery.toLocaleDateString())
-          console.log(dataSearchQuery.toLocaleTimeString())
-          const incrementalSearchQuery = ImportConfig.SearchQuery 
+          const dateSearchQuery =
+            ' and date(BridgeModificationTimestamp) ge ' +
+            dataSearchQuery.toISOString().slice(0,10)
 
+          const incrementalSearchQuery = ImportConfig.SearchQuery + dateSearchQuery
 
           return (
             ImportConfig.ProviderUrl +
@@ -59,10 +57,8 @@ class BridgeClient {
             encodeURI(incrementalSearchQuery) +
             '&$top=200'
           )
-
         }
         if (typeof ImportConfig.nextLink === 'undefined') {
-
           return (
             ImportConfig.ProviderUrl +
             ImportConfig.AdditionalConfig.sold.type +

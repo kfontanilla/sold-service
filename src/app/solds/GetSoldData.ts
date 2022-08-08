@@ -347,14 +347,19 @@ class GetSoldData {
         },
         ImportedListingCount: serviceStatsImportedListingCount,
       } = serviceStatsData
-      let serviceStatsNextLink = serviceStatsData.ServiceDetail.full.nextLink
-
-      if(importConfigData.extractionType === 'extractincremental'){
-        serviceStatsNextLink = serviceStatsData.ServiceDetail.extractincremental.nextLink
-      }
-
+      //set last mod
       if (serviceStatsMofificationTimestamp !== 'undefined') {
         importConfigModificationTimestamp = serviceStatsMofificationTimestamp
+      }
+      importConfigData.ModificationTimestamp = importConfigModificationTimestamp
+
+      let serviceStatsNextLink = serviceStatsData.ServiceDetails.extractfull.nextLink
+
+      if(importConfigData.extractionType === 'extractincremental'){
+        serviceStatsNextLink = this.webAPIClient.buildQueryUrl(importConfigData)
+        if(typeof serviceStatsData.ServiceDetails.extractincremental !== 'undefined'){
+          serviceStatsNextLink = serviceStatsData.ServiceDetails.extractincremental.nextLink
+        }
       }
 
       if (typeof serviceStatsNextLink !== 'undefined') {
@@ -363,7 +368,7 @@ class GetSoldData {
 
       importConfigImportedListingCount = serviceStatsImportedListingCount
       importConfigData.serviceDetail = serviceStatsData
-      importConfigData.ModificationTimestamp = importConfigModificationTimestamp
+    
     }
     importConfigData.ImportedListingCount = importConfigImportedListingCount
     importConfigData.nextLink = importConfigNextLink
