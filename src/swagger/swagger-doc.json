@@ -21,6 +21,31 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "fullscan",
+            "in": "query",
+            "description": "force full data scan to start from the beginning",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Web Api feed results"
+          }
+        }
+      }
+    },
+    "/solds/extractincremental/{ImportId}": {
+      "get": {
+        "description": "Incremental Data Extraction of Solds",
+        "parameters": [
+          {
+            "name": "ImportId",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {

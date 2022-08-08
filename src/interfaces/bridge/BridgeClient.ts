@@ -1,4 +1,4 @@
-import { ImportConfig } from "../../domain/ImportConfig"
+import { ImportConfig } from '../../domain/ImportConfig'
 
 class BridgeClient {
   private readonly httpClient: any
@@ -28,23 +28,54 @@ class BridgeClient {
 
   buildQueryUrl(ImportConfig: ImportConfig) {
     try {
-      if (ImportConfig.AdditionalConfig.sold && typeof ImportConfig.nextLink === 'undefined') {
-        const addedResource = ImportConfig.AdditionalConfig.sold.addedResource
-          ? '/' + ImportConfig.AdditionalConfig.sold.addedResource
-          : ''
+      if (ImportConfig.AdditionalConfig.sold) {
 
-        return (
-          ImportConfig.ProviderUrl +
-          ImportConfig.AdditionalConfig.sold.type +
-          addedResource +
-          '?access_token=' +
-          ImportConfig.ProviderPassword +
-          '&$filter=' +
-          encodeURI(ImportConfig.SearchQuery) +
-          '&$top=' +
-          ImportConfig.RequestLimit
-        )
-      } else {
+        const addedResource = ImportConfig.AdditionalConfig.sold.addedResource
+        ? '/' + ImportConfig.AdditionalConfig.sold.addedResource
+        : ''
+
+        if (
+          ImportConfig.extractionType &&
+          ImportConfig.extractionType === 'extractincremental'
+        ) {
+
+          let dataSearchQuery = new Date()
+          console.log(ImportConfig.serviceDetail)
+          if(ImportConfig.ModificationTimestamp){
+            dataSearchQuery = new Date(Date.parse(ImportConfig.ModificationTimestamp))
+          }
+          // const dateOnly = new Date(dataSearchQuery)
+          console.log(dataSearchQuery.toLocaleDateString())
+          console.log(dataSearchQuery.toLocaleTimeString())
+          const incrementalSearchQuery = ImportConfig.SearchQuery 
+
+
+          return (
+            ImportConfig.ProviderUrl +
+            ImportConfig.AdditionalConfig.sold.type +
+            '?access_token=' +
+            ImportConfig.ProviderPassword +
+            '&$filter=' +
+            encodeURI(incrementalSearchQuery) +
+            '&$top=200'
+          )
+
+        }
+        if (typeof ImportConfig.nextLink === 'undefined') {
+
+          return (
+            ImportConfig.ProviderUrl +
+            ImportConfig.AdditionalConfig.sold.type +
+            addedResource +
+            '?access_token=' +
+            ImportConfig.ProviderPassword +
+            '&$filter=' +
+            encodeURI(ImportConfig.SearchQuery) +
+            '&$top=' +
+            ImportConfig.RequestLimit
+          )
+        }
+
         return ImportConfig.nextLink
       }
     } catch (error) {

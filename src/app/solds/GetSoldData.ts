@@ -1,5 +1,6 @@
 import { ImportConfig } from '../../domain/ImportConfig'
 import { ServiceDetail } from '../../domain/ServiceDetail'
+const url = require('url')
 
 const { INVALID_PATH_PARAMETER_ERROR } = require('src/domain/Errors')
 
@@ -27,20 +28,34 @@ class GetSoldData {
     const {
       params: { ImportId },
     } = request
+
     try {
       const importConfigData = await this.importConfigRepository.getById(
         ImportId
       )
-
-      // Base on providerType - call the appropriate Interface
-      // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
+      const requestUrl = url.parse(request.url, true)
+      // can be extractfull | extractincremental
+      importConfigData.extractionType = this.checkExtraction(
+        requestUrl.pathname
+      )
       let serviceStatsData =
         await this.serviceStatRepository.getLatestServiceStats(importConfigData)
+
+      if (
+        typeof requestUrl.query.fullscan !== 'undefined' &&
+        requestUrl.query.fullscan == 'true' && importConfigData.extractionType === 'extractfull'
+      ) {
+        serviceStatsData = null
+      }
+      // Base on providerType - call the appropriate Interface
+      // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
 
       const newImportConfigData = this.modifyImportConfigData(
         importConfigData,
         serviceStatsData
       )
+
+      console.log(newImportConfigData)
       if (!serviceStatsData) {
         serviceStatsData = await this.updateServiceStat(newImportConfigData)
       }
@@ -122,10 +137,28 @@ class GetSoldData {
             ImportedListingCount: currentImportCount,
             ImageDownLoaded: 0,
             ServiceDetails: {
-              startLink: importData.nextLink,
-              nextLink: queryUrl,
+              extractfull: {
+                startLink: importData.nextLink,
+                nextLink: queryUrl,
+              },
               modificationTimestamp: modificationTimestamp,
             },
+          }
+
+          if (importData.extractionType === 'extractincremental') {
+            importData.serviceDetail = {
+              ImportConfigId: importData.Id,
+              AvailableListingCount: importData.AvailableListingCount,
+              ImportedListingCount: currentImportCount,
+              ImageDownLoaded: 0,
+              ServiceDetails: {
+                extractincremental: {
+                  startLink: importData.nextLink,
+                  nextLink: queryUrl,
+                },
+                modificationTimestamp: modificationTimestamp,
+              },
+            }
           }
 
           this.logger.info({
@@ -140,6 +173,8 @@ class GetSoldData {
 
       if (finished) {
         // update service stats
+        // query listing_table & request again to provider to update final count
+
         importData.serviceDetail = {
           ImportConfigId: importData.Id,
           AvailableListingCount: importData.AvailableListingCount,
@@ -147,12 +182,33 @@ class GetSoldData {
           ImageDownLoaded: 0,
           LastSuccessfulRun: new Date(),
           ServiceDetails: {
-            nextLink: importData.nextLink,
+            extractfull: {
+              nextLink: importData.nextLink,
+            },
             modificationTimestamp:
               modificationTimestamp !== ''
                 ? modificationTimestamp
                 : importData.serviceDetail.ServiceDetails.modificationTimestamp,
           },
+        }
+        if (importData.extractionType === 'extractincremental') {
+          importData.serviceDetail = {
+            ImportConfigId: importData.Id,
+            AvailableListingCount: importData.AvailableListingCount,
+            ImportedListingCount: currentImportCount,
+            ImageDownLoaded: 0,
+            LastSuccessfulRun: new Date(),
+            ServiceDetails: {
+              extractincremental: {
+                nextLink: importData.nextLink,
+              },
+              modificationTimestamp:
+                modificationTimestamp !== ''
+                  ? modificationTimestamp
+                  : importData.serviceDetail.ServiceDetails
+                      .modificationTimestamp,
+            },
+          }
         }
 
         await this.updateServiceStat(importData)
@@ -180,7 +236,7 @@ class GetSoldData {
     for (const key in soldData.value) {
       const listingData = soldData.value[key]
       listingData.ImportConfigId = importData.Id
-      // removed downloading of Media 
+      // removed downloading of Media
       // if (listingData.Media) {
       //   const listingMediaData = listingData.Media.map((item: any) => {
       //     item.ListingKey = listingData.ListingKey
@@ -225,12 +281,26 @@ class GetSoldData {
           AvailableListingCount: soldDataServiceStats['@odata.count'],
           ImageDownLoaded: 0,
           ServiceDetails: {
-            startLink: importData.nextLink,
-            nextLink: soldDataServiceStats['@odata.nextLink'],
+            extractfull: {
+              startLink: importData.nextLink,
+              nextLink: soldDataServiceStats['@odata.nextLink'],
+            }
           },
         }
+        if(importData.extractionType === 'extractincremental'){
+          serviceDetailData = {
+            ImportConfigId: importData.Id,
+            AvailableListingCount: soldDataServiceStats['@odata.count'],
+            ImageDownLoaded: 0,
+            ServiceDetails: {
+              extractincremental: {
+                startLink: importData.nextLink,
+                nextLink: soldDataServiceStats['@odata.nextLink'],
+              }
+            },
+          }
+        }
       }
-
       await this.serviceStatRepository.setServiceStat(serviceDetailData)
     } catch (error: any) {
       const errMessage = error.name
@@ -274,10 +344,15 @@ class GetSoldData {
       let {
         ServiceDetails: {
           modificationTimestamp: serviceStatsMofificationTimestamp,
-          nextLink: serviceStatsNextLink,
+       
         },
         ImportedListingCount: serviceStatsImportedListingCount,
       } = serviceStatsData
+      let serviceStatsNextLink = serviceStatsData.ServiceDetail.full.nextLink
+
+      if(importConfigData.extractionType === 'extractincremental'){
+        serviceStatsNextLink = serviceStatsData.ServiceDetail.extractincremental.nextLink
+      }
 
       if (serviceStatsMofificationTimestamp !== 'undefined') {
         importConfigModificationTimestamp = serviceStatsMofificationTimestamp
@@ -295,6 +370,10 @@ class GetSoldData {
     importConfigData.nextLink = importConfigNextLink
 
     return importConfigData
+  }
+
+  checkExtraction(path: string) {
+    return path.split('/')[2]
   }
 }
 
