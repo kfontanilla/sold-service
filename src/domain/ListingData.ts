@@ -17,6 +17,7 @@ export interface ListingData {
   OriginalListPrice: Number,
   PreviousListPrice: Number,
   DaysOnMarket: Number,
+  PhotosCount: Number,
   CloseDate: Date,
   OriginatingSystemID: String,
   OriginatingSystemKey: String,

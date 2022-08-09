@@ -22,6 +22,8 @@ export interface ImportConfig {
   nextLink?: any
   AvailableListingCount?: any
   serviceDetail: ServiceDetail
+  extractionType?: string
+  getAvailListingCount?: boolean
 }
 
 interface AdditionalConfig {

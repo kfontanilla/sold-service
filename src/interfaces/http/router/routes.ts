@@ -8,21 +8,21 @@ const routes = () => {
   router.get('/solds/extractfull/:ImportId', (...args: any) =>
     /* 
         #swagger.description = 'Full Data Extraction of Solds'
-        #swagger.responses[200] = {
-            description: 'Web Api feed results',
-    } */
+        #swagger.responses[200] = {description: 'Web Api feed results',}
+        #swagger.parameters['fullscan'] = { in: 'query', description: 'force full data scan to start from the beginning', required: false, type: 'boolean', }
+    */
     container.resolve('GetSoldData').execute(...args)
   )
 
-// to follow 
-//   router.get('/solds/extractincremental/:ImportId', (...args: any) =>
-//   /* 
-//       #swagger.description = 'Incremental Data Extraction of Solds'
-//       #swagger.responses[200] = {
-//           description: 'Web Api feed results',
-//   } */
-//   container.resolve('GetSoldData').execute(...args)
-// )
+  // to follow
+  router.get('/solds/extractincremental/:ImportId', (...args: any) =>
+    /* 
+      #swagger.description = 'Incremental Data Extraction of Solds'
+      #swagger.responses[200] = {
+          description: 'Web Api feed results',
+  } */
+    container.resolve('GetSoldData').execute(...args)
+  )
 
   router.get('/solds/getimportconfig/:ImportId', (...args: any) =>
     /*  

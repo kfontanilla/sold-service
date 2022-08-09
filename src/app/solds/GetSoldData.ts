@@ -1,5 +1,6 @@
 import { ImportConfig } from '../../domain/ImportConfig'
 import { ServiceDetail } from '../../domain/ServiceDetail'
+const url = require('url')
 
 const { INVALID_PATH_PARAMETER_ERROR } = require('src/domain/Errors')
 
@@ -13,8 +14,10 @@ class GetSoldData {
     SetListingMedia,
     logger,
     serviceStatRepository,
+    listingDataRepository,
   }: any) {
     this.webAPIClient = webAPIClient
+    this.listingDataRepository = listingDataRepository
     this.responseFormatter = responseFormatter
     this.importConfigRepository = importConfigRepository
     this.setListingData = SetListingData
@@ -27,20 +30,40 @@ class GetSoldData {
     const {
       params: { ImportId },
     } = request
+
     try {
       const importConfigData = await this.importConfigRepository.getById(
         ImportId
       )
-
-      // Base on providerType - call the appropriate Interface
-      // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
+      const requestUrl = url.parse(request.url, true)
+      // can be extractfull | extractincremental
+      importConfigData.extractionType = this.checkExtraction(
+        requestUrl.pathname
+      )
       let serviceStatsData =
         await this.serviceStatRepository.getLatestServiceStats(importConfigData)
+
+      if (
+        typeof requestUrl.query.fullscan !== 'undefined' &&
+        requestUrl.query.fullscan == 'true' && importConfigData.extractionType === 'extractfull'
+      ) {
+        serviceStatsData = null
+      }
+
+      if(importConfigData.extractionType === 'extractincremental') {
+        if(!serviceStatsData){
+          const runFullscanError = { message: 'No record found. Please run extract full scan first before running incremental scans'}
+          throw runFullscanError
+        }
+      }
+      // Base on providerType - call the appropriate Interface
+      // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
 
       const newImportConfigData = this.modifyImportConfigData(
         importConfigData,
         serviceStatsData
       )
+
       if (!serviceStatsData) {
         serviceStatsData = await this.updateServiceStat(newImportConfigData)
       }
@@ -61,6 +84,8 @@ class GetSoldData {
         ImportId,
         error,
       })
+
+      response.message = error
 
       if (message === INVALID_PATH_PARAMETER_ERROR) {
         return this.responseFormatter.badRequest(response)
@@ -114,18 +139,37 @@ class GetSoldData {
             importData: importData,
             soldData: soldData,
           })
-          currentImportCount += soldData.value.length
+          currentImportCount = soldData.value.length
 
-          importData.serviceDetail = {
-            ImportConfigId: importData.Id,
-            AvailableListingCount: importData.AvailableListingCount,
-            ImportedListingCount: currentImportCount,
-            ImageDownLoaded: 0,
-            ServiceDetails: {
-              startLink: importData.nextLink,
-              nextLink: queryUrl,
-              modificationTimestamp: modificationTimestamp,
-            },
+          if (importData.extractionType === 'extractincremental') {
+            importData.serviceDetail = {
+              ImportConfigId: importData.Id,
+              AvailableListingCount: importData.AvailableListingCount,
+              ImportedListingCount: currentImportCount,
+              ImageDownLoaded: 0,
+              ServiceDetails: {
+                extractfull: importData.serviceDetail.ServiceDetails.extractfull,
+                extractincremental: {
+                  startLink: importData.nextLink,
+                  nextLink: queryUrl,
+                },
+                modificationTimestamp: modificationTimestamp,
+              },
+            }
+          } else {
+            importData.serviceDetail = {
+              ImportConfigId: importData.Id,
+              AvailableListingCount: importData.AvailableListingCount,
+              ImportedListingCount: currentImportCount,
+              ImageDownLoaded: 0,
+              ServiceDetails: {
+                extractfull: {
+                  startLink: importData.nextLink,
+                  nextLink: queryUrl,
+                },
+                modificationTimestamp: modificationTimestamp,
+              },
+            }
           }
 
           this.logger.info({
@@ -140,26 +184,52 @@ class GetSoldData {
 
       if (finished) {
         // update service stats
-        importData.serviceDetail = {
-          ImportConfigId: importData.Id,
-          AvailableListingCount: importData.AvailableListingCount,
-          ImportedListingCount: currentImportCount,
-          ImageDownLoaded: 0,
-          LastSuccessfulRun: new Date(),
-          ServiceDetails: {
-            nextLink: importData.nextLink,
-            modificationTimestamp:
-              modificationTimestamp !== ''
-                ? modificationTimestamp
-                : importData.serviceDetail.ServiceDetails.modificationTimestamp,
-          },
+        // query listing_table & request again to provider to update final count
+        const ImportedListingCount = await this.listingDataRepository.getListingCount(importData)
+        // const AvailableListingCount = await this.getAvailableListingCount(importData)
+        if (importData.extractionType === 'extractincremental') {
+          importData.serviceDetail = {
+            ImportConfigId: importData.Id,
+            AvailableListingCount: importData.AvailableListingCount,
+            ImportedListingCount: ImportedListingCount,
+            ImageDownLoaded: 0,
+            LastSuccessfulRun: new Date(),
+            ServiceDetails: {
+              extractfull: importData.serviceDetail.ServiceDetails.extractfull,
+              extractincremental: {
+                nextLink: importData.nextLink,
+              },
+              modificationTimestamp:
+                modificationTimestamp !== ''
+                  ? modificationTimestamp
+                  : importData.serviceDetail.ServiceDetails
+                      .modificationTimestamp,
+            },
+          }
+        } else {
+          importData.serviceDetail = {
+            ImportConfigId: importData.Id,
+            AvailableListingCount:  importData.AvailableListingCount,
+            ImportedListingCount: ImportedListingCount,
+            ImageDownLoaded: 0,
+            LastSuccessfulRun: new Date(),
+            ServiceDetails: {
+              extractfull: {
+                nextLink: importData.nextLink,
+              },
+              modificationTimestamp:
+                modificationTimestamp !== ''
+                  ? modificationTimestamp
+                  : importData.serviceDetail.ServiceDetails.modificationTimestamp,
+            },
+          }
         }
 
         await this.updateServiceStat(importData)
 
         this.logger.info({
           message: 'GET_SOLD_DATA_DONE',
-          currentImportCount,
+          ImportedListingCount,
           finished,
         })
       }
@@ -180,7 +250,7 @@ class GetSoldData {
     for (const key in soldData.value) {
       const listingData = soldData.value[key]
       listingData.ImportConfigId = importData.Id
-      // removed downloading of Media 
+      // removed downloading of Media
       // if (listingData.Media) {
       //   const listingMediaData = listingData.Media.map((item: any) => {
       //     item.ListingKey = listingData.ListingKey
@@ -220,17 +290,32 @@ class GetSoldData {
         )
         // missing implementation check if total count is updated
         await this.delay()
-        serviceDetailData = {
-          ImportConfigId: importData.Id,
-          AvailableListingCount: soldDataServiceStats['@odata.count'],
-          ImageDownLoaded: 0,
-          ServiceDetails: {
-            startLink: importData.nextLink,
-            nextLink: soldDataServiceStats['@odata.nextLink'],
-          },
+        if(importData.extractionType === 'extractincremental'){
+          serviceDetailData = {
+            ImportConfigId: importData.Id,
+            AvailableListingCount: soldDataServiceStats['@odata.count'],
+            ImageDownLoaded: 0,
+            ServiceDetails: {
+              extractincremental: {
+                startLink: importData.nextLink,
+                nextLink: soldDataServiceStats['@odata.nextLink'],
+              }
+            },
+          }
+        } else {
+          serviceDetailData = {
+            ImportConfigId: importData.Id,
+            AvailableListingCount: soldDataServiceStats['@odata.count'],
+            ImageDownLoaded: 0,
+            ServiceDetails: {
+              extractfull: {
+                startLink: importData.nextLink,
+                nextLink: soldDataServiceStats['@odata.nextLink'],
+              }
+            },
+          }
         }
       }
-
       await this.serviceStatRepository.setServiceStat(serviceDetailData)
     } catch (error: any) {
       const errMessage = error.name
@@ -274,13 +359,23 @@ class GetSoldData {
       let {
         ServiceDetails: {
           modificationTimestamp: serviceStatsMofificationTimestamp,
-          nextLink: serviceStatsNextLink,
+       
         },
         ImportedListingCount: serviceStatsImportedListingCount,
       } = serviceStatsData
-
+      //set last mod
       if (serviceStatsMofificationTimestamp !== 'undefined') {
         importConfigModificationTimestamp = serviceStatsMofificationTimestamp
+      }
+      importConfigData.ModificationTimestamp = importConfigModificationTimestamp
+
+      let serviceStatsNextLink = (serviceStatsData.ServiceDetails.extractfull ? serviceStatsData.ServiceDetails.extractfull.nextLink : undefined)
+
+      if(importConfigData.extractionType === 'extractincremental'){
+        serviceStatsNextLink = this.webAPIClient.buildQueryUrl(importConfigData)
+        if(typeof serviceStatsData.ServiceDetails.extractincremental !== 'undefined'){
+          serviceStatsNextLink = serviceStatsData.ServiceDetails.extractincremental.nextLink
+        }
       }
 
       if (typeof serviceStatsNextLink !== 'undefined') {
@@ -289,12 +384,25 @@ class GetSoldData {
 
       importConfigImportedListingCount = serviceStatsImportedListingCount
       importConfigData.serviceDetail = serviceStatsData
-      importConfigData.ModificationTimestamp = importConfigModificationTimestamp
+    
     }
     importConfigData.ImportedListingCount = importConfigImportedListingCount
     importConfigData.nextLink = importConfigNextLink
 
     return importConfigData
+  }
+
+  checkExtraction(path: string) {
+    return path.split('/')[2]
+  }
+
+  async getAvailableListingCount(ImportConfig: ImportConfig) {
+    ImportConfig.getAvailListingCount = true
+    const soldData = await this.webAPIClient.getSolds(
+      ImportConfig
+    )
+
+    return soldData['@odata.count']
   }
 }
 

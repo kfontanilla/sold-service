@@ -18,6 +18,7 @@ class ListingDataRepository extends BaseRDSRepository {
     'PreviousListPrice',
     'DaysOnMarket',
     'CloseDate',
+    'PhotosCount',
     'OriginatingSystemID',
     'OriginatingSystemKey',
     'OriginatingSystemName',
@@ -43,6 +44,17 @@ class ListingDataRepository extends BaseRDSRepository {
         updateOnDuplicate: this.listUpdateFields,
       }
       return await this.upsertMany(ListingData, onDuplicate)
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getListingCount(ImportConfig: any){
+    try {
+      const options = {
+        where: { ImportConfigId: ImportConfig.Id },
+      }
+      return await this.getCount(options)
     } catch (error) {
       throw error
     }

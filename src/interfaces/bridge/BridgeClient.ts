@@ -1,4 +1,4 @@
-import { ImportConfig } from "../../domain/ImportConfig"
+import { ImportConfig } from '../../domain/ImportConfig'
 
 class BridgeClient {
   private readonly httpClient: any
@@ -28,24 +28,56 @@ class BridgeClient {
 
   buildQueryUrl(ImportConfig: ImportConfig) {
     try {
-      if (ImportConfig.AdditionalConfig.sold && typeof ImportConfig.nextLink === 'undefined') {
+      if (ImportConfig.AdditionalConfig.sold) {
         const addedResource = ImportConfig.AdditionalConfig.sold.addedResource
           ? '/' + ImportConfig.AdditionalConfig.sold.addedResource
           : ''
+        if (typeof ImportConfig.nextLink === 'undefined') {
+          return (
+            ImportConfig.ProviderUrl +
+            ImportConfig.AdditionalConfig.sold.type +
+            addedResource +
+            '?access_token=' +
+            ImportConfig.ProviderPassword +
+            '&$filter=' +
+            encodeURI(ImportConfig.SearchQuery) +
+            '&$top=' +
+            ImportConfig.RequestLimit
+          )
+        }
 
-        return (
-          ImportConfig.ProviderUrl +
-          ImportConfig.AdditionalConfig.sold.type +
-          addedResource +
-          '?access_token=' +
-          ImportConfig.ProviderPassword +
-          '&$filter=' +
-          encodeURI(ImportConfig.SearchQuery) +
-          '&$top=' +
-          ImportConfig.RequestLimit
-        )
-      } else {
         return ImportConfig.nextLink
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+  buildIncrementalQueryUrl(ImportConfig: ImportConfig) {
+    try {
+      if (ImportConfig.AdditionalConfig.sold) {
+
+          let dataSearchQuery = new Date()
+          if (ImportConfig.ModificationTimestamp) {
+            dataSearchQuery = new Date(
+              Date.parse(ImportConfig.ModificationTimestamp)
+            )
+          }
+          const dateSearchQuery =
+            ' and date(BridgeModificationTimestamp) ge ' +
+            dataSearchQuery.toISOString().slice(0, 10)
+
+          const incrementalSearchQuery =
+            ImportConfig.SearchQuery + dateSearchQuery
+
+          return (
+            ImportConfig.ProviderUrl +
+            ImportConfig.AdditionalConfig.sold.type +
+            '?access_token=' +
+            ImportConfig.ProviderPassword +
+            '&$filter=' +
+            encodeURI(incrementalSearchQuery) +
+            '&$top=200'
+          )
       }
     } catch (error) {
       throw error

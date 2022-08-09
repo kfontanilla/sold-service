@@ -9,7 +9,7 @@ export class BaseRDSRepository {
    *
    * @param {Object} [options = null] The search options. If null, this will return ALL rows in the table.
    */
-  async getAll(options = null) {
+  async getAll(options: any) {
     if (options) {
       return this.model.findAll(options)
     }
@@ -90,6 +90,19 @@ export class BaseRDSRepository {
       throw error
     }
   }
+
+
+    /**
+   * Gets count all entries based on the search options provided. If no options was supplied, this will return ALL rows in the table.
+   *
+   * @param {Object} [options = null] The search options. If null, this will return ALL rows in the table.
+   */
+     async getCount(options: any) {
+      if (options) {
+        return this.model.count(options)
+      }
+      return this.model.findAll()
+    }
 
 
 }

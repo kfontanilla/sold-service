@@ -12,6 +12,7 @@ class ResponseFormatter {
     response.status(statusCode).send({
       success: false,
       error: body,
+      error_message: (response.message ? response.message : 'Check logs for details')
     })
   }
 

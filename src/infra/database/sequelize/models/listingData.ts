@@ -74,6 +74,11 @@ module.exports = (sequelize: any, DataTypes: any) => {
         field: 'HomeWarrantyYN',
         allowNull: true,
       },
+      PhotosCount: {
+        type: DataTypes.TINYINT(10),
+        field: 'PhotosCount',
+        allowNull: true,
+      },
       ClosePrice: {
         type: DataTypes.DECIMAL(16, 2),
         field: 'ClosePrice',
