@@ -47,6 +47,17 @@ class ListingDataRepository extends BaseRDSRepository {
       throw error
     }
   }
+
+  async getListingCount(ImportConfig: any){
+    try {
+      const options = {
+        where: { ImportConfigId: ImportConfig.Id },
+      }
+      return await this.getCount(options)
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 module.exports = ListingDataRepository
