@@ -32,32 +32,6 @@ class BridgeClient {
         const addedResource = ImportConfig.AdditionalConfig.sold.addedResource
           ? '/' + ImportConfig.AdditionalConfig.sold.addedResource
           : ''
-        if (
-          ImportConfig.extractionType &&
-          ImportConfig.extractionType === 'extractincremental'
-        ) {
-          let dataSearchQuery = new Date()
-          if (ImportConfig.ModificationTimestamp) {
-            dataSearchQuery = new Date(
-              Date.parse(ImportConfig.ModificationTimestamp)
-            )
-          }
-          const dateSearchQuery =
-            ' and date(BridgeModificationTimestamp) ge ' +
-            dataSearchQuery.toISOString().slice(0,10)
-
-          const incrementalSearchQuery = ImportConfig.SearchQuery + dateSearchQuery
-
-          return (
-            ImportConfig.ProviderUrl +
-            ImportConfig.AdditionalConfig.sold.type +
-            '?access_token=' +
-            ImportConfig.ProviderPassword +
-            '&$filter=' +
-            encodeURI(incrementalSearchQuery) +
-            '&$top=200'
-          )
-        }
         if (typeof ImportConfig.nextLink === 'undefined') {
           return (
             ImportConfig.ProviderUrl +
@@ -73,6 +47,37 @@ class BridgeClient {
         }
 
         return ImportConfig.nextLink
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+  buildIncrementalQueryUrl(ImportConfig: ImportConfig) {
+    try {
+      if (ImportConfig.AdditionalConfig.sold) {
+
+          let dataSearchQuery = new Date()
+          if (ImportConfig.ModificationTimestamp) {
+            dataSearchQuery = new Date(
+              Date.parse(ImportConfig.ModificationTimestamp)
+            )
+          }
+          const dateSearchQuery =
+            ' and date(BridgeModificationTimestamp) ge ' +
+            dataSearchQuery.toISOString().slice(0, 10)
+
+          const incrementalSearchQuery =
+            ImportConfig.SearchQuery + dateSearchQuery
+
+          return (
+            ImportConfig.ProviderUrl +
+            ImportConfig.AdditionalConfig.sold.type +
+            '?access_token=' +
+            ImportConfig.ProviderPassword +
+            '&$filter=' +
+            encodeURI(incrementalSearchQuery) +
+            '&$top=200'
+          )
       }
     } catch (error) {
       throw error

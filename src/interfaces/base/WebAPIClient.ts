@@ -10,17 +10,17 @@ class WebAPIClient {
   }
 
   // get sold by LegacyImportId
-  async getSolds(importConfig: ImportConfig) {
+  async getSolds(ImportConfig: ImportConfig) {
     try {
       // check the provider type
 
-      switch (importConfig.ProviderType) {
+      switch (ImportConfig.ProviderType) {
         case 'webapibridge':
-          return await this.bridgeClient.getSolds(importConfig)
+          return await this.bridgeClient.getSolds(ImportConfig)
 
           break
         case 'mlsgrid':
-          return await this.mlsGridClient.getSolds(importConfig)
+          return await this.mlsGridClient.getSolds(ImportConfig)
 
           break
 
@@ -32,15 +32,21 @@ class WebAPIClient {
     }
   }
 
-  buildQueryUrl(importConfig: ImportConfig) {
+  buildQueryUrl(ImportConfig: ImportConfig) {
     try {
-      switch (importConfig.ProviderType) {
+      switch (ImportConfig.ProviderType) {
         case 'webapibridge':
-          return this.bridgeClient.buildQueryUrl(importConfig)
+          if (
+            ImportConfig.extractionType &&
+            ImportConfig.extractionType === 'extractincremental'
+          ) {
+          } else {
+            return this.bridgeClient.buildQueryUrl(ImportConfig)
+          }
 
           break
         case 'mlsgrid':
-          return this.mlsGridClient.buildQueryUrl(importConfig)
+          return this.mlsGridClient.buildQueryUrl(ImportConfig)
           break
 
         default:

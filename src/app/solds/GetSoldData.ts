@@ -50,6 +50,13 @@ class GetSoldData {
       ) {
         serviceStatsData = null
       }
+
+      if(importConfigData.extractionType === 'extractincremental') {
+        if(!serviceStatsData){
+          const runFullscanError = { message: 'No record found. Please run extract full scan first before running incremental scans'}
+          throw runFullscanError
+        }
+      }
       // Base on providerType - call the appropriate Interface
       // For MLSGrid, you need to include the ModificationTimestamp on your next link just incase of errors during import
 
@@ -78,6 +85,8 @@ class GetSoldData {
         ImportId,
         error,
       })
+
+      response.message = error
 
       if (message === INVALID_PATH_PARAMETER_ERROR) {
         return this.responseFormatter.badRequest(response)
@@ -177,13 +186,13 @@ class GetSoldData {
       if (finished) {
         // update service stats
         // query listing_table & request again to provider to update final count
-        const AvailableListingCount = await this.listingDataRepository.getListingCount(importData)
-
+        const ImportedListingCount = await this.listingDataRepository.getListingCount(importData)
+        // const AvailableListingCount = await this.getAvailableListingCount(importData)
         if (importData.extractionType === 'extractincremental') {
           importData.serviceDetail = {
             ImportConfigId: importData.Id,
             AvailableListingCount: importData.AvailableListingCount,
-            ImportedListingCount: AvailableListingCount,
+            ImportedListingCount: ImportedListingCount,
             ImageDownLoaded: 0,
             LastSuccessfulRun: new Date(),
             ServiceDetails: {
@@ -202,7 +211,7 @@ class GetSoldData {
           importData.serviceDetail = {
             ImportConfigId: importData.Id,
             AvailableListingCount:  importData.AvailableListingCount,
-            ImportedListingCount: AvailableListingCount,
+            ImportedListingCount: ImportedListingCount,
             ImageDownLoaded: 0,
             LastSuccessfulRun: new Date(),
             ServiceDetails: {
@@ -221,7 +230,7 @@ class GetSoldData {
 
         this.logger.info({
           message: 'GET_SOLD_DATA_DONE',
-          AvailableListingCount,
+          ImportedListingCount,
           finished,
         })
       }
@@ -282,17 +291,6 @@ class GetSoldData {
         )
         // missing implementation check if total count is updated
         await this.delay()
-        serviceDetailData = {
-          ImportConfigId: importData.Id,
-          AvailableListingCount: soldDataServiceStats['@odata.count'],
-          ImageDownLoaded: 0,
-          ServiceDetails: {
-            extractfull: {
-              startLink: importData.nextLink,
-              nextLink: soldDataServiceStats['@odata.nextLink'],
-            }
-          },
-        }
         if(importData.extractionType === 'extractincremental'){
           serviceDetailData = {
             ImportConfigId: importData.Id,
@@ -305,9 +303,21 @@ class GetSoldData {
               }
             },
           }
+        } else {
+          serviceDetailData = {
+            ImportConfigId: importData.Id,
+            AvailableListingCount: soldDataServiceStats['@odata.count'],
+            ImageDownLoaded: 0,
+            ServiceDetails: {
+              extractfull: {
+                startLink: importData.nextLink,
+                nextLink: soldDataServiceStats['@odata.nextLink'],
+              }
+            },
+          }
         }
       }
-      serviceDetailData = await this.serviceStatRepository.setServiceStat(serviceDetailData)
+      await this.serviceStatRepository.setServiceStat(serviceDetailData)
     } catch (error: any) {
       const errMessage = error.name
       this.logger.error({
@@ -385,6 +395,15 @@ class GetSoldData {
 
   checkExtraction(path: string) {
     return path.split('/')[2]
+  }
+
+  async getAvailableListingCount(ImportConfig: ImportConfig) {
+    ImportConfig.getAvailListingCount = true
+    const soldData = await this.webAPIClient.getSolds(
+      ImportConfig
+    )
+
+    return soldData['@odata.count']
   }
 }
 

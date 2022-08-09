@@ -23,7 +23,7 @@ export interface ImportConfig {
   AvailableListingCount?: any
   serviceDetail: ServiceDetail
   extractionType?: string
-  updateListingCount?: boolean
+  getAvailListingCount?: boolean
 }
 
 interface AdditionalConfig {

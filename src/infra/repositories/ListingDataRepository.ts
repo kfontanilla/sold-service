@@ -18,6 +18,7 @@ class ListingDataRepository extends BaseRDSRepository {
     'PreviousListPrice',
     'DaysOnMarket',
     'CloseDate',
+    'PhotosCount',
     'OriginatingSystemID',
     'OriginatingSystemKey',
     'OriginatingSystemName',
