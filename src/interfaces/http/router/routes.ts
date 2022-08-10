@@ -14,15 +14,15 @@ const routes = () => {
     container.resolve('GetSoldData').execute(...args)
   )
 
-// to follow 
-//   router.get('/solds/extractincremental/:ImportId', (...args: any) =>
-//   /* 
-//       #swagger.description = 'Incremental Data Extraction of Solds'
-//       #swagger.responses[200] = {
-//           description: 'Web Api feed results',
-//   } */
-//   container.resolve('GetSoldData').execute(...args)
-// )
+  // to follow
+  //   router.get('/solds/extractincremental/:ImportId', (...args: any) =>
+  //   /*
+  //       #swagger.description = 'Incremental Data Extraction of Solds'
+  //       #swagger.responses[200] = {
+  //           description: 'Web Api feed results',
+  //   } */
+  //   container.resolve('GetSoldData').execute(...args)
+  // )
 
   router.get('/solds/getimportconfig/:ImportId', (...args: any) =>
     /*  
@@ -32,6 +32,11 @@ const routes = () => {
         } */
     container.resolve('GetImportConfig').execute(...args)
   )
+
+  router.post('/solds/requery/:ImportId', (...args: any) =>
+    container.resolve('RequerySoldData').execute(...args)
+  )
+
   // Show available endpoints in the terminal
   return router
 }

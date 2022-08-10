@@ -43,6 +43,7 @@ class Server {
     // this.app.disable('x-powered-by');
 
     // load up the routes
+    this.app.use(express.json())
     this.app.use(routes())
     this.app.use('/swagger-doc', swaggerUi.serve, swaggerUi.setup(Document))
 

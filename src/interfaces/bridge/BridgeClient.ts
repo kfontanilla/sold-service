@@ -1,10 +1,10 @@
-import { ImportConfig } from "../../domain/ImportConfig"
+import { ImportConfig } from '../../domain/ImportConfig'
 
 class BridgeClient {
-  private readonly httpClient: any
-
-  constructor({ httpClient }: any) {
+  [property: string]: any
+  constructor({ httpClient, oDataQueryHelper }: any) {
     this.httpClient = httpClient
+    this.oDataQueryHelper = oDataQueryHelper
   }
 
   // get sold by LegacyImportId
@@ -26,9 +26,42 @@ class BridgeClient {
     }
   }
 
+  async getBridgeSoldDataByListingKey(
+    importConfigData: ImportConfig,
+    listingKeys: Array<string>
+  ): Promise<any> {
+    const { ProviderUrl, ProviderPassword } = importConfigData
+    try {
+      const oDataQueryFilter =
+        this.oDataQueryHelper.createMultipleInQueryFilter(
+          'ListingKey',
+          listingKeys
+        )
+
+      const options = {
+        headers: {
+          'Accept-Encoding': 'gzip, deflate, br',
+          Authorization: `Bearer ${ProviderPassword}`,
+        },
+      }
+
+      const { data } = await this.httpClient.get(
+        `${ProviderUrl}Property${oDataQueryFilter}`,
+        options
+      )
+      
+      return data
+    } catch (error) {
+      throw error
+    }
+  }
+
   buildQueryUrl(ImportConfig: ImportConfig) {
     try {
-      if (ImportConfig.AdditionalConfig.sold && typeof ImportConfig.nextLink === 'undefined') {
+      if (
+        ImportConfig.AdditionalConfig.sold &&
+        typeof ImportConfig.nextLink === 'undefined'
+      ) {
         const addedResource = ImportConfig.AdditionalConfig.sold.addedResource
           ? '/' + ImportConfig.AdditionalConfig.sold.addedResource
           : ''
